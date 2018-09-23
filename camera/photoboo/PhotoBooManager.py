@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 from picamera import PiCamera
 from .PhotoBoo import PhotoBoo
 try:
@@ -20,7 +20,7 @@ class PhotoBooManager(object):
 
     def run(self):
         tmp_image_filename = "original_{}.jpg".format(
-            round(datetime.now().timestamp())
+            round(time.time())
         )
         tmp_image_filepath = self.images_folder / Path(tmp_image_filename)
         self.camera.capture(tmp_image_filepath)
