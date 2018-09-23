@@ -1,0 +1,63 @@
+# API Server
+
+Here lies an API server in Python where photos can be uploaded and downloaded.
+
+## Put a photo:
+
+PUT /api/photos
+
+Request Body:
+```
+{
+	"name": "<photo name>",
+	"data": "<base64 encoded image data>"
+}
+```
+
+
+## Get list of photos
+GET /api/photos
+
+Response Body:
+```
+{
+	[
+		{ "name": "<photo name>", "id": "<photo id>", "ctime": "<timestamp>"}
+		{ "name": "<photo name>", "id": "<photo id>", "ctime": "<timestamp>"}
+		{ "name": "<photo name>", "id": "<photo id>", "ctime": "<timestamp>"}
+		{ "name": "<photo name>", "id": "<photo id>", "ctime": "<timestamp>"}
+	]
+}
+```
+
+
+## Get a specific photo
+GET /api/photos/<id>
+
+Response Body:
+```
+{
+	{
+		"name": "<photo name>",
+		"id": "<photo id>",
+		"ctime": "<timestamp>",
+		"data": "<base64 encoded image data>"
+	}
+}
+```
+
+
+## Get a random photo
+GET /api/photos/random
+
+Response Body:
+```
+{
+	{
+		"name": "<photo name>",
+		"id": "<photo id>",
+		"ctime": "<timestamp>",
+		"data": "<base64 encoded image data>"
+	}
+}
+```
