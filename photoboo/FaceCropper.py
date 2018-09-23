@@ -1,9 +1,9 @@
+from __future__ import print_function
 import cv
 import numpy as np
 import dlib
 import os
 import time
-from __future__ import print_function
 # Modified from from:
 # http://gregblogs.com/computer-vision-cropping-faces-from-images-using-opencv2/
 
