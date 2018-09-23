@@ -1,7 +1,11 @@
 from datetime import datetime
 from picamera import PiCamera
 from .PhotoBoo import PhotoBoo
-from pathlib import Path
+try:
+    from pathlib import Path
+    Path().expanduser()
+except (ImportError,AttributeError):
+    from pathlib2 import Path
 
 
 class PhotoBooManager(object):
