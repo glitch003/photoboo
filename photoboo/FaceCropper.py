@@ -1,13 +1,13 @@
 # Modified from from:
 # http://gregblogs.com/computer-vision-cropping-faces-from-images-using-opencv2/
-import cv2
+import cv
 import numpy as np
 import dlib
 import os
 import time
 
 
-class FaceCropper:
+class FaceCropper(object):
     in_verbose_mode = False
     do_print_verbose_decorators = True
 

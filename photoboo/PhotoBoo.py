@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 
-class PhotoBoo:
+class PhotoBoo(object):
     face_cropper = None
 
     def __init__(self):

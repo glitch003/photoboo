@@ -4,7 +4,7 @@ from .PhotoBoo import PhotoBoo
 from pathlib import Path
 
 
-class PhotoBooManager:
+class PhotoBooManager(object):
     camera = None
     photo_boo = None
     images_folder = Path("photoboo/images")
