@@ -5,6 +5,7 @@ import numpy as np
 import dlib
 import os
 import time
+from __future__ import print_function
 
 
 class FaceCropper(object):
