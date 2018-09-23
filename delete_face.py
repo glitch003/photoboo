@@ -12,9 +12,15 @@ if __name__ == '__main__' :
     face_cropper = FaceCropper()
 
     image = face_cropper.open_image(image_filename)
-    face_bounding_box = face_cropper.get_face_bounding_box(image)
-    #print(face_bounding_box)
+    try:
+        face_bounding_box = face_cropper.get_face_bounding_box(image)
+        print(face_bounding_box)
+    except:
+        # set this as the background image
+        print("background found!")
 
+
+    sys.exit(1)
     '''
     x1, y1, x2, x2 = face_bounding_box
     center_x = x1 + (x2 - x1)/2
@@ -39,23 +45,12 @@ if __name__ == '__main__' :
     max_y = 0
     for landmark in landmarks:
         x, y = landmark
-        #print(landmark)
-        if x < min_x:
-            min_x = x
-        if x > max_x:
-            max_x = x
-        if y < min_y:
-            min_y = y
-        if y > max_y:
-            max_y = y
+        min_x = min(x, min_x)
+        min_y = min(y, min_y)
+        max_x = max(x, max_x)
+        max_y = max(y, max_y)
 
-    #print(face_bounding_box)
-    face_bounds = (
-        min_x,
-        min_y,
-        max_x,
-        max_y
-    )
+    face_bounds = (min_x, min_y, max_x, max_y)
     '''
     cv2.rectangle(
         image,

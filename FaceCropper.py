@@ -24,6 +24,9 @@ class FaceCropper:
         image = cv2.imread(image_filename)
         return image
 
+    def save_image(self, filename, image):
+        cv2.imwrite(filename, image)
+
     def get_face_bounding_box(self, image):
         self.say("Finding bounding box for face in image... ", "")
         if os.path.isfile(self.face_data_filename) is False or \
