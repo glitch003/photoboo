@@ -1,4 +1,4 @@
-from FaceCropper import FaceCropper
+from .FaceCropper import FaceCropper
 
 class PhotoBoo:
     face_cropper = Null
@@ -75,8 +75,7 @@ class PhotoBoo:
                 counter += 1
         return face_shape_points
 
-    def replace_face_shape_with_background(self, image):
-        background = self.face_cropper.open_image("background.jpg")
+    def replace_face_shape_with_background(self, image, background):
         pts = np.array(face_shape_points).astype(np.int)
         mask = 0 * np.ones(background.shape, background.dtype)
         cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
