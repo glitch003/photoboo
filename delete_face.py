@@ -5,6 +5,7 @@ import sys
 import cv2
 import numpy as np
 
+
 if __name__ == '__main__' :
     image_filename = sys.argv[1]
     save_filename = sys.argv[2]

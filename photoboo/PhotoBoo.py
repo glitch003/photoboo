@@ -1,10 +1,13 @@
 from .FaceCropper import FaceCropper
+import cv2
+import numpy as np
+
 
 class PhotoBoo:
-    face_cropper = Null
+    face_cropper = None
 
     def __init__(self):
-        self.face_cropper = FaceCropper();
+        self.face_cropper = FaceCropper()
 
     def load_photo(self, filename):
         image = self.face_cropper.open_image(filename)
@@ -14,7 +17,7 @@ class PhotoBoo:
         try:
             self.face_cropper.get_face_bounding_box(image)
             return True
-        except
+        except:
             return False
 
     def save_background(self, image):
@@ -36,23 +39,21 @@ class PhotoBoo:
             min_y = min(y, min_y)
             max_x = max(x, max_x)
             max_y = max(y, max_y)
-        face_bounds = (min_x, min_y, max_x, max_y)
         width, height, channels = image.shape
         image_bounds = (0, 0, width, height)
-        #print(image_bounds)
-        triangles = face_cropper.get_deluanay_triangles_from_landmarks(
+        triangles = self.face_cropper.get_deluanay_triangles_from_landmarks(
             landmarks,
             image_bounds
         )
         for triangle in triangles:
             point1, point2, point3 = triangle
-        deluanay_points = face_cropper.get_raw_points_from_deluanay_triangles(
+        deluanay_points = self.face_cropper.get_raw_points_from_deluanay_triangles(
             triangles
         )
-        face_shape_indeces = face_cropper.get_face_shape_from_deluanay_trangles(
+        face_shape_indeces = self.face_cropper.get_face_shape_from_deluanay_trangles(
             deluanay_points
         )
-        last_index = 0
+        # last_index = 0
         counter = 0
         min_x = 999999
         min_y = 999999
@@ -71,11 +72,18 @@ class PhotoBoo:
             if y > max_y:
                 max_y = y
             if counter > 0:
-                last_index = index
+                # last_index = index
                 counter += 1
-        return face_shape_points
+        face_bounds = (min_x, min_y, max_x, max_y)
+        output = {
+            "points": face_shape_points,
+            "bounds": face_bounds
+        }
+        return output
 
-    def replace_face_shape_with_background(self, image, background):
+    def replace_face_with_background(self, image, background, face_shape):
+        face_shape_points = face_shape["points"]
+        min_x, min_y, max_x, max_y = face_shape_points["bounds"]
         pts = np.array(face_shape_points).astype(np.int)
         mask = 0 * np.ones(background.shape, background.dtype)
         cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
@@ -88,10 +96,10 @@ class PhotoBoo:
             background,
             image,
             mask,
-            center, 
+            center,
             cv2.NORMAL_CLONE
         )
         return merged_image
 
     def save_image(self, image, filename):
-        self.face_cropper.save_image(filename, image)
+        self.face_cropper.save_image(image, filename)

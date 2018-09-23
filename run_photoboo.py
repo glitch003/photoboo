@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 from photoboo.PhotoBooManager import PhotoBooManager
 
@@ -19,7 +20,7 @@ def main():
     command_arguments = command_parser.parse_args()
     print(command_arguments)
 
-    photo_boo = PhotoBoo_Manager()
+    photo_boo = PhotoBooManager()
     photo_boo.run()
 
 

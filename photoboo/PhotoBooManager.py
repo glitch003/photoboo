@@ -3,6 +3,7 @@ from picamera import PiCamera
 from .PhotoBoo import PhotoBoo
 from pathlib import Path
 
+
 class PhotoBooManager:
     camera = None
     photo_boo = None
@@ -18,7 +19,7 @@ class PhotoBooManager:
             round(datetime.now().timestamp())
         )
         tmp_image_filepath = self.images_folder / Path(tmp_image_filename)
-        self.camera.capture(tmp_image_filename)
+        self.camera.capture(tmp_image_filepath)
         image = self.photo_boo.load_photo(tmp_image_filename)
         does_face_exist = self.photo_boo.does_face_exist(image)
         if does_face_exist is False:
@@ -28,8 +29,8 @@ class PhotoBooManager:
             background = self.photo_boo.load_photo(
                 self.images_folder / self.background_filename
             )
-            self.photo_boo.replace_face_shape_with_background(
-                image,background
+            self.photo_boo.replace_face_with_background(
+                image, background
             )
             tmp_image_filename = self.images_folder / Path(
                 "ghosted_{}.jpg".format(
@@ -39,4 +40,3 @@ class PhotoBooManager:
             output_filename = tmp_image_filename.replace("original", "ghosted")
             output_filepath = self.images_folder / Path(output_filename)
             self.photo_boo.save_image(image, output_filepath)
-
