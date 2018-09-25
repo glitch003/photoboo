@@ -24,7 +24,7 @@ class PhotoBooManager(object):
         )
         tmp_image_filepath = self.images_folder / Path(tmp_image_filename)
         print(tmp_image_filepath)
-        print(tmp_image_filepath.exists())
+        print(self.images_folder.exists())
         self.camera.capture(tmp_image_filepath)
         image = self.photo_boo.load_photo(tmp_image_filename)
         does_face_exist = self.photo_boo.does_face_exist(image)
