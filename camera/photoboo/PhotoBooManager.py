@@ -21,12 +21,11 @@ class PhotoBooManager(object):
         self.photo_boo = PhotoBoo()
 
     def run(self):
-        script_folder = os.path.dirname(os.path.realpath(sys.argv[0]))
-        print(script_folder)
+        script_folder = Path(os.path.dirname(os.path.realpath(sys.argv[0])))
         tmp_image_filename = "original_{}.jpg".format(
             round(time.time())
         )
-        tmp_image_filepath = self.images_folder / Path(tmp_image_filename)
+        tmp_image_filepath = script_folder / self.images_folder / Path(tmp_image_filename)
         print(tmp_image_filepath)
         print(self.images_folder.exists())
         self.camera.capture(tmp_image_filepath)
