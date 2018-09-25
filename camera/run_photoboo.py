@@ -18,7 +18,6 @@ def build_command_parser():
 def main():
     command_parser = build_command_parser()
     command_arguments = command_parser.parse_args()
-    print(command_arguments)
 
     photo_boo = PhotoBooManager()
     photo_boo.run()
