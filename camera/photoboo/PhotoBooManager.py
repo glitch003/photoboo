@@ -22,12 +22,18 @@ class PhotoBooManager(object):
 
     def run(self):
         script_folder = Path(os.path.dirname(os.path.realpath(sys.argv[0])))
+        images_folder = script_folder / self.images_folder
         tmp_image_filename = "original_{}.jpg".format(
             round(time.time())
         )
-        tmp_image_filepath = script_folder / self.images_folder / Path(tmp_image_filename)
+        tmp_image_filepath = images_folder / Path(tmp_image_filename)
         print(tmp_image_filepath)
-        print(self.images_folder.exists())
+        does_folder_exist = self.images_folder.exists()
+        if does_folder_exist is False:
+            try:  
+                os.mkdir(images_folder)
+            except OSError:  
+                print("Creation of the directory {} failed".format(images_folder))
         self.camera.capture(tmp_image_filepath)
         image = self.photo_boo.load_photo(tmp_image_filename)
         does_face_exist = self.photo_boo.does_face_exist(image)
