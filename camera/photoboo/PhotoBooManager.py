@@ -22,7 +22,7 @@ class PhotoBooManager(object):
 
     def run(self):
         script_folder = os.path.dirname(os.path.realpath(sys.argv[0]))
-        console.log(script_folder)
+        print(script_folder)
         tmp_image_filename = "original_{}.jpg".format(
             round(time.time())
         )
