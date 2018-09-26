@@ -1,5 +1,5 @@
 from .FaceCropper import FaceCropper
-import cv2
+import cv
 import numpy as np
 
 

@@ -1,6 +1,7 @@
 import time
 import os
 import sys
+import base64
 from picamera import PiCamera
 from .PhotoBoo import PhotoBoo
 try:
@@ -51,6 +52,10 @@ class PhotoBooManager(object):
             output["path"] = output_filepath
 
         return output
+        base64_data = base64.encodestring(output["data"])
+        self.say(base64_data)
+        self.say("Type: {}".format(output["type"]))
+        self.say("Path: {}".format(output["path"].as_posix()))
 
     def __create_path_if_not_exists(self, images_folder):
         does_folder_exist = self.images_folder.exists()
@@ -79,3 +84,6 @@ class PhotoBooManager(object):
         self.photo_boo.save_image(image, output_filepath.as_posix())
 
         return outut_filepath
+
+    def say(self, message):
+        print("[{}] {}".format(self.__class__.__name__, message))
