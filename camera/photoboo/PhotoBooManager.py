@@ -31,9 +31,11 @@ class PhotoBooManager(object):
         does_folder_exist = self.images_folder.exists()
         if does_folder_exist is False:
             try:  
-                os.mkdir(images_folder)
+                images_folder.mkdir()
             except OSError:  
-                print("Creation of the directory {} failed".format(images_folder))
+                print("Creation of the directory {} failed".format(
+                    images_folder.as_posix()
+                ))
         self.camera.capture(tmp_image_filepath)
         image = self.photo_boo.load_photo(tmp_image_filename)
         does_face_exist = self.photo_boo.does_face_exist(image)
