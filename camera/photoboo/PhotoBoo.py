@@ -86,18 +86,18 @@ class PhotoBoo(object):
         min_x, min_y, max_x, max_y = face_shape_points["bounds"]
         pts = np.array(face_shape_points).astype(np.int)
         mask = 0 * np.ones(background.shape, background.dtype)
-        cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
+        cv.fillPoly(mask, [pts], (255, 255, 255), 1)
         width, height, channels = image.shape
         center = (
             int(round(min_x + (max_x - min_x)/2)),
             int(round(min_y + (max_y - min_y)/2))
         )
-        merged_image = cv2.seamlessClone(
+        merged_image = cv.seamlessClone(
             background,
             image,
             mask,
             center,
-            cv2.NORMAL_CLONE
+            cv.NORMAL_CLONE
         )
         return merged_image
 
