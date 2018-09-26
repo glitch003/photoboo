@@ -50,9 +50,10 @@ class PhotoBooManager(object):
             output_filepath = self.__take_photoboo_photo(image, background)
             output["type"] = "face"
             output["path"] = output_filepath
+            #self.__upload_photo(image, output["path"].name)
 
         return output
-        base64_data = base64.encodestring(output["data"])
+        base64_data = base64.encode(output["data"])
         self.say(base64_data)
         self.say("Type: {}".format(output["type"]))
         self.say("Path: {}".format(output["path"].as_posix()))
@@ -84,6 +85,15 @@ class PhotoBooManager(object):
         self.photo_boo.save_image(image, output_filepath.as_posix())
 
         return outut_filepath
+
+    def __upload_photo(self, image, filename):
+        api_url = "http://20mission.org/photoboo/api/photo"
+        method = "PUT"
+        payload = {
+            "name": filename,
+            "data": base64.encode(image)
+        }
+        requests.put(api_url, json=payload)
 
     def say(self, message):
         print("[{}] {}".format(self.__class__.__name__, message))
