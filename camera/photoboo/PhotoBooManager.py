@@ -21,39 +21,61 @@ class PhotoBooManager(object):
         self.photo_boo = PhotoBoo()
 
     def run(self):
-        script_folder = Path(os.path.dirname(os.path.realpath(sys.argv[0])))
+        output = {}
+        script_folder = self.__get_script_folder()
         images_folder = script_folder / self.images_folder
         tmp_image_filename = "original_{}.jpg".format(
             round(time.time())
         )
         tmp_image_filepath = images_folder / Path(tmp_image_filename)
-        print(tmp_image_filepath)
+        try:
+            self.__create_path_if_not_exists(images_folder)
+        except OSError:  
+            print("Creation of the directory {} failed".format(
+                images_folder.as_posix()
+            ))
+            raise SystemExit
+
+        self.camera.capture(tmp_image_filepath.as_posix())
+        image = self.photo_boo.load_photo(tmp_image_filename.as_posix())
+        does_face_exist = self.photo_boo.does_face_exist(image)
+
+        output["data"] = image
+        if does_face_exist is False:
+            self.photo_boo.save_background(self.background_filename.as_posix())
+            output["type"] = "background"
+            output["path"] = self.background_filename
+        else:
+            output_filepath = self.__take_photoboo_photo(image, background)
+            output["type"] = "face"
+            output["path"] = output_filepath
+
+        return output
+
+    def __create_path_if_not_exists(self, images_folder):
         does_folder_exist = self.images_folder.exists()
         if does_folder_exist is False:
-            try:  
-                images_folder.mkdir()
-            except OSError:  
-                print("Creation of the directory {} failed".format(
-                    images_folder.as_posix()
-                ))
-        self.camera.capture(tmp_image_filepath)
-        image = self.photo_boo.load_photo(tmp_image_filename)
-        does_face_exist = self.photo_boo.does_face_exist(image)
-        if does_face_exist is False:
-            self.photo_boo.save_background(self.background_filename)
-        else:
-            self.photo_boo.get_face_shape(image)
-            background = self.photo_boo.load_photo(
-                self.images_folder / self.background_filename
+            images_folder.mkdir()
+
+    def __get_script_folder(self):
+        return Path(os.path.dirname(os.path.realpath(sys.argv[0])))
+
+    def __take_photoboo_photo(self, image, background):
+        self.photo_boo.get_face_shape(image)
+        background_filename = self.images_folder / self.background_filename
+        background = self.photo_boo.load_photo(
+            background_filename.as_posix()
+        )
+        self.photo_boo.replace_face_with_background(
+            image, background
+        )
+        tmp_image_filename = self.images_folder / Path(
+            "ghosted_{}.jpg".format(
+                round(datetime.now().timestamp())
             )
-            self.photo_boo.replace_face_with_background(
-                image, background
-            )
-            tmp_image_filename = self.images_folder / Path(
-                "ghosted_{}.jpg".format(
-                    round(datetime.now().timestamp())
-                )
-            )
-            output_filename = tmp_image_filename.replace("original", "ghosted")
-            output_filepath = self.images_folder / Path(output_filename)
-            self.photo_boo.save_image(image, output_filepath)
+        )
+        output_filename = tmp_image_filename.replace("original", "ghosted")
+        output_filepath = self.images_folder / Path(output_filename)
+        self.photo_boo.save_image(image, output_filepath.as_posix())
+
+        return outut_filepath
