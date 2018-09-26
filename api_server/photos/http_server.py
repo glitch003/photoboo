@@ -95,6 +95,9 @@ class HttpServer:
     def print_json(self, data):
         print(json.dumps(data, indent=3))
 
+    def print_content(self, data):
+        print(data)
+
     def set_header(self, key, value):
         self.headers[key] = value
 
