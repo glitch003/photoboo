@@ -37,7 +37,7 @@ class PhotoBooManager(object):
             raise SystemExit
 
         self.camera.capture(tmp_image_filepath.as_posix())
-        image = self.photo_boo.load_photo(tmp_image_filename.as_posix())
+        image = self.photo_boo.load_photo(tmp_image_filepath.as_posix())
         does_face_exist = self.photo_boo.does_face_exist(image)
 
         output["data"] = image
