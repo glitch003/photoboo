@@ -19,6 +19,8 @@ $ pip install numpy
 $ pip install picamera
 ```
 
+Be sure to enable your camera in the raspi-config
+
 To get this working on a Pi, install Raspbian "Jesse":
 https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2017-07-05/
 
