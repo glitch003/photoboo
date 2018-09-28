@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py
 wget "https://github.com/jabelone/OpenCV-for-Pi/raw/master/latest-OpenCV.deb"
