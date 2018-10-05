@@ -2,15 +2,19 @@ import time
 import os
 import sys
 import base64
-from picamera import PiCamera
-from .PhotoBoo import PhotoBoo
+from .PhotoBooGhoster import PhotoBooGhoster
 from datetime import datetime
 import requests
+import cv2
 try:
     from pathlib import Path
     Path().expanduser()
 except (ImportError, AttributeError):
     from pathlib2 import Path
+try:
+    from picamera import PiCamera
+except (ImportError, AttributeError):
+    pass
 
 
 class PhotoBooManager(object):
@@ -20,10 +24,10 @@ class PhotoBooManager(object):
     background_filename = Path("background.jpg")
 
     def __init__(self):
-        self.camera = PiCamera()
-        self.photo_boo = PhotoBoo()
+        self.photo_boo = PhotoBooGhoster()
 
     def take_photo(self):
+        camera = PiCamera()
         script_folder = self.__get_script_folder()
         images_folder = script_folder / self.images_folder
         tmp_image_filename = "original_{}.jpg".format(
@@ -38,20 +42,26 @@ class PhotoBooManager(object):
             ))
             raise SystemExit
 
-        self.camera.capture(tmp_image_filepath.as_posix())
+        camera.capture(tmp_image_filepath.as_posix())
         return tmp_image_filepath.as_posix()
 
     def open_image(self, filename):
-        image = self.photo_boo.load_photo(filename)
+        image = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+        # image = self.photo_boo.face_cropper.open_image(filename, greyscale=True)
         return image
 
-    def ghostify(self, image):
+    def ghostify(self, image_filepath):
+        image = self.open_image(image_filepath)
         output = {}
         does_face_exist = self.photo_boo.does_face_exist(image)
 
         output["data"] = image
         if does_face_exist is False:
-            self.photo_boo.save_background(self.background_filename.as_posix())
+            self.photo_boo.face_cropper.display(image)
+            self.photo_boo.face_cropper.save_image(
+                self.background_filename.as_posix(),
+                image
+            )
             output["face_found"] = False
             output["path"] = self.background_filename
         else:

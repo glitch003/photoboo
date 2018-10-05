@@ -8,13 +8,17 @@ class PhotoBooGhoster(object):
     face_cropper = None
 
     def __init__(self):
-        self.face_cropper = FaceCropper()
+        self.face_cropper = FaceCropper(in_verbose_mode = True)
 
     def load_photo(self, filename):
         image = self.face_cropper.open_image(filename, greyscale=True)
         return image
 
+    def save_background(self, image):
+        self.face_cropper.save_image("background.jpg", image)
+
     def does_face_exist(self, image):
+        self.face_cropper.get_face_bounding_box(image)
         try:
             self.face_cropper.get_face_bounding_box(image)
             return True
@@ -45,7 +49,7 @@ class PhotoBooGhoster(object):
         # modified from:
         # https://www.pyimagesearch.com/2017/04/10/detect-eyes-nose-lips-jaw-dlib-opencv-python/
         overlay = image.copy()
-        output = image.output()
+        output = image.copy()
         FACIAL_LANDMARKS_IDXS = OrderedDict([
             ("mouth", (48, 68)),
             ("right_eyebrow", (17, 22)),
@@ -59,7 +63,7 @@ class PhotoBooGhoster(object):
             # grab the (x, y)-coordinates associated with the
             # face landmark
             (j, k) = FACIAL_LANDMARKS_IDXS[name]
-            pts = face_landmarks[j:k]
+            pts = np.array(face_landmarks[j:k])
 
             color = (0, 0, 0)
             # check if are supposed to draw the jawline
@@ -81,7 +85,10 @@ class PhotoBooGhoster(object):
             min_y = min(y, min_y)
             max_x = max(x, max_x)
             max_y = max(y, max_y)
-        width, height, channels = image.shape
+        try:
+            width, height, channels = image.shape
+        except:
+            width, height = image.shape
         image_bounds = (0, 0, width, height)
         triangles = self.face_cropper.get_deluanay_triangles_from_landmarks(
             landmarks,
@@ -127,6 +134,12 @@ class PhotoBooGhoster(object):
         # modified from:
         # https://www.packtpub.com/mapt/book/application_development/9781785283932/2/ch02lvl1sec21/motion-blur
         # generating the kernel
+        try:
+            width, height, channels = image.shape
+        except:
+            width, height = image.shape
+        size = int(width / 30)
+
         kernel_motion_blur = np.zeros((size, size))
         kernel_motion_blur[int((size-1)/2), :] = np.ones(size)
         kernel_motion_blur = kernel_motion_blur / size
@@ -137,22 +150,28 @@ class PhotoBooGhoster(object):
 
     def merge_images(self, face_image, background_image, face_shape):
         face_shape_points = face_shape["points"]
-        min_x, min_y, max_x, max_y = face_shape_points["bounds"]
+        print(face_shape_points)
+        min_x, min_y, max_x, max_y = face_shape["bounds"]
         pts = np.array(face_shape_points).astype(np.int)
         mask = 0 * np.ones(background_image.shape, background_image.dtype)
         cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
-        width, height, channels = face_image.shape
+        try:
+            width, height, channels = face_image.shape
+        except:
+            width, height = face_image.shape
         center = (
             int(round(min_x + (max_x - min_x)/2)),
             int(round(min_y + (max_y - min_y)/2))
         )
+        # print(mask.tolist())
         merged_image = cv2.seamlessClone(
             face_image,
             background_image,
             mask,
             center,
-            cv2.NORMAL_CLONE
+            cv2.MIXED_CLONE
         )
+        self.face_cropper.display(merged_image)
         return merged_image
 
     def save_image(self, image, filename):

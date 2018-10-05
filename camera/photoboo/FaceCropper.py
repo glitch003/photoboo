@@ -4,6 +4,11 @@ import numpy as np
 import dlib
 import os
 import time
+try:
+    from pathlib import Path
+    Path().expanduser()
+except (ImportError, AttributeError):
+    from pathlib2 import Path
 # Modified from from:
 # http://gregblogs.com/computer-vision-cropping-faces-from-images-using-opencv2/
 
@@ -20,24 +25,35 @@ class FaceCropper(object):
         self.in_verbose_mode = in_verbose_mode
         self.say("In verbose mode")
 
+    def __get_real_path(self):
+        real_path = Path(
+            os.path.dirname(os.path.realpath(__file__))
+        )
+        return real_path
+
     def open_image(self, image_filename, greyscale=False):
         if greyscale is True:
             image = cv2.imread(image_filename, cv2.IMREAD_GRAYSCALE)
+        else:
             image = cv2.imread(image_filename)
         return image
 
     def get_face_bounding_box(self, image):
+        face_data_path = self.__get_real_path() / self.face_data_filename
         self.say("Finding bounding box for face in image... ", "")
-        if os.path.isfile(self.face_data_filename) is False or \
-                os.access(self.face_data_filename, os.R_OK) is False:
+        if os.path.isfile(face_data_path) is False or \
+                os.access(face_data_path, os.R_OK) is False:
             raise Exception(
                 """haarscade file, '{}' is not accessible.
                 Download from opencv""".format(
-                    self.face_data_filename
+                    face_data_path
                 )
             )
-        face_cascade = cv2.CascadeClassifier(self.face_data_filename)
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        face_cascade = cv2.CascadeClassifier(face_data_path.as_posix())
+        try:
+            gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        except:
+            gray_image = image
         faces_bounding_box = face_cascade.detectMultiScale(
             gray_image,
             scaleFactor=1.05,
@@ -49,16 +65,17 @@ class FaceCropper(object):
         return faces_bounding_box
 
     def get_face_landmarks(self, image, face_bounds=None):
-        self.say("Finding face landmarks landmarks... ", "")
-        if os.path.isfile(self.predictor_path) is False or \
-                os.access(self.predictor_path, os.R_OK) is False:
+        self.say("Finding face landmarks... ", "")
+        predictor_path = self.__get_real_path() / self.predictor_path
+        if os.path.isfile(predictor_path) is False or \
+                os.access(predictor_path, os.R_OK) is False:
             raise Exception(
                 """haarscade file, '{}' is not accessible.
                 Download from opencv""".format(
-                    self.shape_predictor_68_face_landmarks
+                    self.predictor_path.as_posix()
                 )
             )
-        predictor = dlib.shape_predictor(self.predictor_path)
+        predictor = dlib.shape_predictor(predictor_path.as_posix())
         if face_bounds is None:
             x = 0
             y = 0
@@ -125,6 +142,7 @@ class FaceCropper(object):
                     point2,
                     point3
                 ))
+        self.say("done")
         return deluanay_triangles
 
     def get_raw_points_from_deluanay_triangles(self, deluanay_triangles):

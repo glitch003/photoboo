@@ -26,13 +26,7 @@ def main():
     if image_filepath is None:
         image_filepath = photo_boo.take_photo()
 
-    try:
-        image = photo_boo.open_image(image_filepath)
-    except:
-        print("file {} was not readable".format(command_arguments.image))
-        raise SystemExit
-
-    image = photo_boo.ghostify(image)
+    image = photo_boo.ghostify(image_filepath)
 
 
 if __name__ == "__main__":
