@@ -32,7 +32,7 @@ def main():
         print("file {} was not readable".format(command_arguments.image))
         raise SystemExit
 
-    photo_boo.run(image)
+    image = photo_boo.ghostify(image)
 
 
 if __name__ == "__main__":

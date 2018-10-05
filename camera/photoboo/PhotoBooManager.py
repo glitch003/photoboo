@@ -45,26 +45,25 @@ class PhotoBooManager(object):
         image = self.photo_boo.load_photo(filename)
         return image
 
-    def run(self, image):
+    def ghostify(self, image):
         output = {}
         does_face_exist = self.photo_boo.does_face_exist(image)
 
         output["data"] = image
         if does_face_exist is False:
-            # FIXME: what to do when there's no face
             self.photo_boo.save_background(self.background_filename.as_posix())
-            output["type"] = "background"
+            output["face_found"] = False
             output["path"] = self.background_filename
         else:
             output_filepath = self.__take_photoboo_photo(image)
-            output["type"] = "face"
+            output["face_found"] = True
             output["path"] = output_filepath
             # self.__upload_photo(image, output["path"].name)
 
         return output
         base64_data = base64.encode(output["data"])
         self.say(base64_data)
-        self.say("Type: {}".format(output["type"]))
+        self.say("Face Found: {}".format(str(output["face_found"])))
         self.say("Path: {}".format(output["path"].as_posix()))
         return output
 
