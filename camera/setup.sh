@@ -7,6 +7,7 @@ apt-get upgrade -y
 apt-get install -y build-essential cmake
 apt-get install -y libgtk-3-dev
 apt-get install -y libboost-all-dev
+apt-get install -y python-dev
 
 pip install numpy
 pip install scipy
@@ -19,9 +20,6 @@ apt-get install -y libjpeg-dev
 apt-get install -y libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
 apt-get install -y libgtk2.0-dev
 apt-get install -y libatlas-base-dev gfortran
-apt-get install -y python-dev
-
-pip install numpy
 
 dpkg -i latest-OpenCV.deb
 

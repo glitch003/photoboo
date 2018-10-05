@@ -7,6 +7,7 @@ import time
 # Modified from from:
 # http://gregblogs.com/computer-vision-cropping-faces-from-images-using-opencv2/
 
+
 class FaceCropper(object):
     in_verbose_mode = False
     do_print_verbose_decorators = True
@@ -19,8 +20,10 @@ class FaceCropper(object):
         self.in_verbose_mode = in_verbose_mode
         self.say("In verbose mode")
 
-    def open_image(self, image_filename):
-        image = cv.imread(image_filename)
+    def open_image(self, image_filename, greyscale=False):
+        if greyscale is True:
+            image = cv2.imread(image_filename, cv2.IMREAD_GRAYSCALE)
+            image = cv2.imread(image_filename)
         return image
 
     def get_face_bounding_box(self, image):
@@ -33,14 +36,14 @@ class FaceCropper(object):
                     self.face_data_filename
                 )
             )
-        face_cascade = cv.CascadeClassifier(self.face_data_filename)
-        gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        face_cascade = cv2.CascadeClassifier(self.face_data_filename)
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces_bounding_box = face_cascade.detectMultiScale(
             gray_image,
             scaleFactor=1.05,
             minNeighbors=5,
             minSize=(100, 100),
-            flags=cv.CASCADE_SCALE_IMAGE
+            flags=cv2.CASCADE_SCALE_IMAGE
         )[0]
         self.say("done")
         return faces_bounding_box
@@ -100,7 +103,7 @@ class FaceCropper(object):
 
     def get_deluanay_triangles_from_landmarks(self, landmarks, bounds):
         self.say("Getting Deluanay triangles from landmarks... ", "")
-        subdiv2d = cv.Subdiv2D(bounds)
+        subdiv2d = cv2.Subdiv2D(bounds)
         for landmark in landmarks:
             x, y = landmark
             subdiv2d.insert((x, y))
@@ -135,7 +138,7 @@ class FaceCropper(object):
 
     def get_face_shape_from_deluanay_trangles(self, raw_points):
         points = np.array(raw_points)
-        hullIndex = cv.convexHull(points, returnPoints=False)
+        hullIndex = cv2.convexHull(points, returnPoints=False)
         return hullIndex
 
     def save_image(self, image_data, output_filename):
@@ -155,8 +158,8 @@ class FaceCropper(object):
                 self.do_print_verbose_decorators = False
 
     def display(self, image_data, title="", time_s=None):
-        cv.imshow(title, image_data)
-        cv.waitKey(0)
+        cv2.imshow(title, image_data)
+        cv2.waitKey(0)
         if time_s is not None:
             time.sleep(time_s)
-        cv.destroyAllWindows()
+        cv2.destroyAllWindows()

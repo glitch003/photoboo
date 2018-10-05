@@ -1,16 +1,17 @@
 from .FaceCropper import FaceCropper
 import cv2
 import numpy as np
+from collections import OrderedDict
 
 
-class PhotoBoo(object):
+class PhotoBooGhoster(object):
     face_cropper = None
 
     def __init__(self):
         self.face_cropper = FaceCropper()
 
     def load_photo(self, filename):
-        image = self.face_cropper.open_image(filename)
+        image = self.face_cropper.open_image(filename, greyscale=True)
         return image
 
     def does_face_exist(self, image):
@@ -20,15 +21,56 @@ class PhotoBoo(object):
         except:
             return False
 
-    def save_background(self, image):
-        self.face_cropper.save_image("background.jpg", image)
+    def ghost_face(self, image):
+        face_landmarks = self.get_face_landmarks(image)
+        face_shape = self.get_face_shape(image, face_landmarks)
+        ghost_face = self.fill_in_mouth_and_eyes(image, face_landmarks)
+        blurred_background = self.horizontal_blur(image)
+        merged_image = self.merge_images(
+            ghost_face,
+            blurred_background,
+            face_shape
+        )
+        return merged_image
 
-    def get_face_shape(self, image):
+    def get_face_landmarks(self, image):
         face_bounding_box = self.face_cropper.get_face_bounding_box(image)
         landmarks = self.face_cropper.get_face_landmarks(
             image,
             face_bounding_box
         )
+        return landmarks
+
+    def fill_in_mouth_and_eyes(self, image, face_landmarks, alpha=1.0):
+        # modified from:
+        # https://www.pyimagesearch.com/2017/04/10/detect-eyes-nose-lips-jaw-dlib-opencv-python/
+        overlay = image.copy()
+        output = image.output()
+        FACIAL_LANDMARKS_IDXS = OrderedDict([
+            ("mouth", (48, 68)),
+            ("right_eyebrow", (17, 22)),
+            ("left_eyebrow", (22, 27)),
+            ("right_eye", (36, 42)),
+            ("left_eye", (42, 48)),
+            ("nose", (27, 35)),
+            ("jaw", (0, 17))
+        ])
+        for (i, name) in enumerate(FACIAL_LANDMARKS_IDXS.keys()):
+            # grab the (x, y)-coordinates associated with the
+            # face landmark
+            (j, k) = FACIAL_LANDMARKS_IDXS[name]
+            pts = face_landmarks[j:k]
+
+            color = (0, 0, 0)
+            # check if are supposed to draw the jawline
+            if name == "mouth" or name == "left_eye" or name == "right_eye":
+                hull = cv2.convexHull(pts)
+                cv2.drawContours(overlay, [hull], -1, color, -1)
+
+            cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)
+        return output
+
+    def get_face_shape(self, image, landmarks):
         min_x = 999999
         min_y = 999999
         max_x = 0
@@ -81,20 +123,32 @@ class PhotoBoo(object):
         }
         return output
 
-    def replace_face_with_background(self, image, background, face_shape):
+    def horizontal_blur(self, image, size=15):
+        # modified from:
+        # https://www.packtpub.com/mapt/book/application_development/9781785283932/2/ch02lvl1sec21/motion-blur
+        # generating the kernel
+        kernel_motion_blur = np.zeros((size, size))
+        kernel_motion_blur[int((size-1)/2), :] = np.ones(size)
+        kernel_motion_blur = kernel_motion_blur / size
+
+        # applying the kernel to the input image
+        output = cv2.filter2D(image, -1, kernel_motion_blur)
+        return output
+
+    def merge_images(self, face_image, background_image, face_shape):
         face_shape_points = face_shape["points"]
         min_x, min_y, max_x, max_y = face_shape_points["bounds"]
         pts = np.array(face_shape_points).astype(np.int)
-        mask = 0 * np.ones(background.shape, background.dtype)
+        mask = 0 * np.ones(background_image.shape, background_image.dtype)
         cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
-        width, height, channels = image.shape
+        width, height, channels = face_image.shape
         center = (
             int(round(min_x + (max_x - min_x)/2)),
             int(round(min_y + (max_y - min_y)/2))
         )
         merged_image = cv2.seamlessClone(
-            background,
-            image,
+            face_image,
+            background_image,
             mask,
             center,
             cv2.NORMAL_CLONE
