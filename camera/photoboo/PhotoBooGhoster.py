@@ -18,7 +18,6 @@ class PhotoBooGhoster(object):
         self.face_cropper.save_image("background.jpg", image)
 
     def does_face_exist(self, image):
-        self.face_cropper.get_face_bounding_box(image)
         try:
             self.face_cropper.get_face_bounding_box(image)
             return True
