@@ -50,6 +50,7 @@ def run():
 
     elif method == "PUT":
         conn = connect_to_mysql()
+        photo_manager = PhotoManager(conn)
         
         photo_manager.save_new_photo(
             post_data["name"],
