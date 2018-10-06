@@ -58,7 +58,6 @@ class PhotoBooManager(object):
 
         output["data"] = image
         if does_face_exist is False:
-            self.photo_boo.face_cropper.display(image)
             self.photo_boo.face_cropper.save_image(
                 self.background_filename.as_posix(),
                 image
