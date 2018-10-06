@@ -68,7 +68,7 @@ class PhotoBooManager(object):
             output["face_found"] = True
             output["path"] = output_filepath
         print(output["path"])
-        self.__upload_photo(image, output["path"].name)
+        self.__upload_photo(image, Path(output["path"]).name)
 
         base64_data = base64.encodestring(output["data"])
         # self.say(base64_data)
