@@ -58,12 +58,8 @@ class PhotoBooManager(object):
 
         output["data"] = image
         if does_face_exist is False:
-            self.photo_boo.face_cropper.save_image(
-                self.background_filename.as_posix(),
-                image
-            )
             output["face_found"] = False
-            output["path"] = self.background_filename
+            output["path"] = image_filepath
         else:
             output_filepath = self.__take_photoboo_photo(image)
             output["face_found"] = True
