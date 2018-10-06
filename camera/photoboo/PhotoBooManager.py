@@ -71,7 +71,7 @@ class PhotoBooManager(object):
         base64_data = base64.encodestring(output["data"])
         self.say(base64_data)
         self.say("Face Found: {}".format(str(output["face_found"])))
-        self.say("Path: {}".format(output["path"].as_posix()))
+        self.say("Path: {}".format(output["path"]))
         return output
 
     def __create_path_if_not_exists(self, images_folder):
