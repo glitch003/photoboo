@@ -75,7 +75,7 @@ class HttpServer:
 
     def get_query_parameters(self):
         query_params = dict(parse.parse_qsl(
-            self.query_string
+            self.get_query_string()
         ))
         return query_params
 
