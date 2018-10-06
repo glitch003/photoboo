@@ -5,6 +5,7 @@ import datetime
 from os import environ
 from settings import settings
 from http_server import HttpServer
+from photo_manager import PhotoManager
 
 
 http_server = HttpServer(environ, sys.stdin)
