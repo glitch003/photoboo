@@ -87,8 +87,6 @@ class PhotoBooManager(object):
 
     def __take_photoboo_photo(self, image):
         ghosted_face = self.photo_boo.ghost_face(image)
-
-        self.photo_boo.face_cropper.display(ghosted_face)
         tmp_image_filename = self.images_folder / Path(
             "ghosted_{}.jpg".format(
                 round(datetime.now().timestamp())
