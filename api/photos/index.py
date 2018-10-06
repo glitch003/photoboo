@@ -22,13 +22,6 @@ def connect_to_mysql():
     )
     return conn
 
-def run1():
-    method = http_server.get_method()
-    http_server.set_status(200)
-    http_server.print_headers()
-    http_server.print_content(method)
-
-
 def run():
     method = http_server.get_method()
     if method == "OPTIONS":
@@ -106,4 +99,4 @@ def run():
         http_server.print_content("")
 
 
-run1()
+run()

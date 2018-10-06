@@ -9,7 +9,7 @@ class PhotoManager:
     def get_photo_by_id(self, id):
         cur = self.sql_connection.cursor()
         cleaned_id = self.sql_connection.escape(id)
-        query = "SELECT `id`,`name`, TO_BASE64('data') as `base64_data`, `ctime` FROM `{}` WHERE `id`={};".format(
+        query = "SELECT `id`,`name`, TO_BASE64(`data`) as `base64_data`, `ctime` FROM `{}` WHERE `id`={};".format(
             cleaned_id
         )
         cur.execute(query)
@@ -30,18 +30,17 @@ class PhotoManager:
         cur.close()
         return photo
 
-    def get_random_photo(self, id):
+    def get_random_photo(self):
         cur = self.sql_connection.cursor()
-        cleaned_id = self.sql_connection.escape(id)
-        query = "SELECT `id`,`name`, TO_BASE64('data') as `base64_data`, `ctime` FROM `{}` ORDER BY RAND() LIMIT 0,1;".format(
-            cleaned_id
+        query = "SELECT `id`,`name`, TO_BASE64(`data`) as `base64_data`, `ctime` FROM `{}` ORDER BY RAND() LIMIT 0,1;".format(
+            self.table_name
         )
         cur.execute(query)
         
         PHOTO_ID = 0
         PHOTO_NAME = 1
-        PHOTO_DATA = 3
-        PHOTO_CTIME = 4
+        PHOTO_DATA = 2
+        PHOTO_CTIME = 3
 
         photo = {}
         for row in cur:
