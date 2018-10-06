@@ -6,6 +6,7 @@ from .PhotoBooGhoster import PhotoBooGhoster
 from datetime import datetime
 import requests
 import cv2
+import time
 try:
     from pathlib import Path
     Path().expanduser()
@@ -85,11 +86,14 @@ class PhotoBooManager(object):
     def __get_script_folder(self):
         return Path(os.path.dirname(os.path.realpath(sys.argv[0])))
 
+    def to_seconds(self, date):
+        return time.mktime(date.timetuple())
+
     def __take_photoboo_photo(self, image):
         ghosted_face = self.photo_boo.ghost_face(image)
         tmp_image_filename = self.images_folder / Path(
             "ghosted_{}.jpg".format(
-                round(datetime.now().timestamp())
+                round(self.to_seconds(datetime.now()))
             )
         )
         output_filename = Path(tmp_image_filename.as_posix().replace(
