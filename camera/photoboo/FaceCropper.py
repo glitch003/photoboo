@@ -38,6 +38,15 @@ class FaceCropper(object):
             image = cv2.imread(image_filename)
         return image
 
+    def adjust_gamma(self, image, gamma=1.0):
+        # taken from:
+        # https://stackoverflow.com/a/51174313/9193553
+        invGamma = 1.0 / gamma
+        table = np.array([
+            ((i / 255.0) ** invGamma) * 255
+            for i in np.arange(0, 256)])
+        return cv2.LUT(image.astype(np.uint8), table.astype(np.uint8))
+
     def get_face_bounding_box(self, image):
         face_data_path = self.__get_real_path() / self.face_data_filename
         self.say("Finding bounding box for face in image... ", "")
@@ -160,7 +169,7 @@ class FaceCropper(object):
         return hullIndex
 
     def save_image(self, image_data, output_filename):
-        self.say("Saving image to file... ", "")
+        self.say("Saving image to file '{}'... ".format(output_filename), "")
         cv2.imwrite(output_filename, image_data)
         self.say("done")
 

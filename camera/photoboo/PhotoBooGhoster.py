@@ -150,7 +150,6 @@ class PhotoBooGhoster(object):
 
     def merge_images(self, face_image, background_image, face_shape):
         face_shape_points = face_shape["points"]
-        print(face_shape_points)
         min_x, min_y, max_x, max_y = face_shape["bounds"]
         pts = np.array(face_shape_points).astype(np.int)
         mask = 0 * np.ones(background_image.shape, background_image.dtype)
@@ -159,6 +158,11 @@ class PhotoBooGhoster(object):
             width, height, channels = face_image.shape
         except:
             width, height = face_image.shape
+            face_image = cv2.cvtColor(face_image, cv2.COLOR_GRAY2RGB)
+            background_image = cv2.cvtColor(
+                background_image,
+                cv2.COLOR_GRAY2RGB
+            )
         center = (
             int(round(min_x + (max_x - min_x)/2)),
             int(round(min_y + (max_y - min_y)/2))
@@ -171,7 +175,6 @@ class PhotoBooGhoster(object):
             center,
             cv2.MIXED_CLONE
         )
-        self.face_cropper.display(merged_image)
         return merged_image
 
     def save_image(self, image, filename):

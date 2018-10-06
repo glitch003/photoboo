@@ -86,15 +86,20 @@ class PhotoBooManager(object):
         return Path(os.path.dirname(os.path.realpath(sys.argv[0])))
 
     def __take_photoboo_photo(self, image):
-        self.photo_boo.ghost_face(image)
+        ghosted_face = self.photo_boo.ghost_face(image)
+
+        self.photo_boo.face_cropper.display(ghosted_face)
         tmp_image_filename = self.images_folder / Path(
             "ghosted_{}.jpg".format(
                 round(datetime.now().timestamp())
             )
         )
-        output_filename = tmp_image_filename.replace("original", "ghosted")
-        output_filepath = self.images_folder / Path(output_filename)
-        self.photo_boo.save_image(image, output_filepath.as_posix())
+        output_filename = Path(tmp_image_filename.as_posix().replace(
+            "original",
+            "ghosted"
+        ))
+        output_filepath = Path(output_filename)
+        self.photo_boo.save_image(ghosted_face, output_filepath.as_posix())
 
         return output_filepath
 
