@@ -41,8 +41,8 @@ class FaceCropper(object):
     def get_face_bounding_box(self, image):
         face_data_path = self.__get_real_path() / self.face_data_filename
         self.say("Finding bounding box for face in image... ", "")
-        if os.path.isfile(face_data_path) is False or \
-                os.access(face_data_path, os.R_OK) is False:
+        if os.path.isfile(face_data_path.as_posix()) is False or \
+                os.access(face_data_path.as_posix(), os.R_OK) is False:
             raise Exception(
                 """haarscade file, '{}' is not accessible.
                 Download from opencv""".format(
