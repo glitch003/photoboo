@@ -48,4 +48,21 @@ def run():
                 http_server.print_headers()
                 http_server.print_json(photo)
 
+    elif method == "PUT":
+        conn = connect_to_mysql()
+        try:
+            photo_manager.save_new_photo(
+                post_data["name"],
+                post_data["data"]
+            )
+            http_server.set_status(201)
+            http_server.print_headers()
+            http_server.print_content("")
+        except:
+            http_server.set_status(400)
+            http_server.print_headers()
+            http_server.print_content("")
+
+        conn.close()
+
 run()
