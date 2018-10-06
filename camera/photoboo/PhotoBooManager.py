@@ -58,6 +58,7 @@ class PhotoBooManager(object):
 
         output["data"] = image
         if does_face_exist is False:
+            output["data"] = image
             output["face_found"] = False
             output["path"] = image_filepath
         else:
@@ -66,7 +67,7 @@ class PhotoBooManager(object):
             output["data"] = image
             output["face_found"] = True
             output["path"] = output_filepath
-            self.__upload_photo(image, output["path"].name)
+        self.__upload_photo(image, output["path"].name)
 
         base64_data = base64.encodestring(output["data"])
         # self.say(base64_data)
