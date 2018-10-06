@@ -85,7 +85,7 @@ class HttpServer:
             post_data = json.load(self.payload)
         except:
             pass
-        return post_data        
+        return post_data
 
     def print_headers(self):
         for key, value in self.headers.items():

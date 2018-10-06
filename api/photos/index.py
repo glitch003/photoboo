@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 import sys
 import pymysql
-import datetime
 from os import environ
 from settings import settings
 from http_server import HttpServer
 from photo_manager import PhotoManager
 
-
 http_server = HttpServer(environ, sys.stdin)
 http_server.set_header("Access-Control-Allow-Methods", "GET, PUT, OPTIONS")
+
 
 def connect_to_mysql():
     conn = pymysql.connect(
@@ -81,10 +80,13 @@ def run():
         else:
             conn = connect_to_mysql()
             try:
-                photo_manager.save_new_photo(post_data["name"], post_data["data"])
+                photo_manager.save_new_photo(
+                    post_data["name"],
+                    post_data["data"]
+                )
                 http_server.set_status(201)
                 http_server.print_headers()
-                http_server.print_json(get_share_types(conn, cur))
+                http_server.print_content("")
             except:
                 http_server.set_status(400)
                 http_server.print_headers()

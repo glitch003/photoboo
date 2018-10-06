@@ -1,14 +1,14 @@
 class PhotoManager:
 
-	sql_connection = None
-	table_name = "photoboo_photos"
+    sql_connection = None
+    table_name = "photoboo_photos"
 
-	def __init__(self, sql_connection):
-		self.sql_connection = sql_connection
+    def __init__(self, sql_connection):
+        self.sql_connection = sql_connection
 
-	def get_photo_by_id(self, id):
-        cur = conn.cursor()
-        cleaned_id = conn.escape(id)
+    def get_photo_by_id(self, id):
+        cur = self.sql_connection.cursor()
+        cleaned_id = self.sql_connection.escape(id)
         query = "SELECT `id`,`name`, TO_BASE64('data') as `base64_data`, `ctime` FROM `{}` WHERE `id`={};".format(
             cleaned_id
         )
@@ -30,9 +30,9 @@ class PhotoManager:
         cur.close()
         return photo
 
-	def get_random_photo(self, id):
-        cur = conn.cursor()
-        cleaned_id = conn.escape(id)
+    def get_random_photo(self, id):
+        cur = self.sql_connection.cursor()
+        cleaned_id = self.sql_connection.escape(id)
         query = "SELECT `id`,`name`, TO_BASE64('data') as `base64_data`, `ctime` FROM `{}` ORDER BY RAND() LIMIT 0,1;".format(
             cleaned_id
         )
@@ -54,23 +54,23 @@ class PhotoManager:
         cur.close()
         return photo
 
-	def save_new_photo(self, name, data):
-        cur = conn.cursor()
-        cleaned_name = conn.escape(name)
-        cleaned_data = conn.escape(data)
+    def save_new_photo(self, name, data):
+        cur = self.sql_connection.cursor()
+        cleaned_name = self.sql_connection.escape(name)
+        cleaned_data = self.sql_connection.escape(data)
         query = "INSERT INTO `photoboo_photos` (`name`,`data`) values ({},FROM_BASE64({}));".format(
             cleaned_name,
             cleaned_data
         )
         cur.execute(query)
-        conn.commit()
+        self.sql_connection.commit()
         cur.close()
 
-	def get_metadata_for_all_photos(self):
-        cur = conn.cursor()
+    def get_metadata_for_all_photos(self):
+        cur = self.sql_connection.cursor()
         # FIXME: figure out if user is trying to get a particular photo
         query = "SELECT `id`,`name`,`ctime` from `{}` ORDER BY `ctime` DESC;".format(
-        	self.table_name
+            self.table_name
         )
         cur.execute(query)
 
