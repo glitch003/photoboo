@@ -4,7 +4,6 @@ python get-pip.py
 wget "https://github.com/jabelone/OpenCV-for-Pi/raw/master/latest-OpenCV.deb"
 apt-get update
 apt-get upgrade -y
-apt-get install -y cmake
 apt-get install -y build-essential cmake
 apt-get install -y libgtk-3-dev
 apt-get install -y libboost-all-dev
@@ -15,6 +14,7 @@ pip install scipy
 pip install scikit-image
 pip install picamera
 pip install pathlib2
+pip install requests
 
 apt-get install -y libtiff5-dev libjasper-dev libpng12-dev
 apt-get install -y libjpeg-dev
