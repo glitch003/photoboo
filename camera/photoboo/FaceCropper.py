@@ -67,8 +67,8 @@ class FaceCropper(object):
     def get_face_landmarks(self, image, face_bounds=None):
         self.say("Finding face landmarks... ", "")
         predictor_path = self.__get_real_path() / self.predictor_path
-        if os.path.isfile(predictor_path) is False or \
-                os.access(predictor_path, os.R_OK) is False:
+        if os.path.isfile(predictor_path.as_posx()) is False or \
+                os.access(predictor_path.as_posix(), os.R_OK) is False:
             raise Exception(
                 """haarscade file, '{}' is not accessible.
                 Download from opencv""".format(
