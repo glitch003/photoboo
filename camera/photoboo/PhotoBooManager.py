@@ -63,11 +63,12 @@ class PhotoBooManager(object):
         else:
             output_filepath = self.__take_photoboo_photo(image)
             image = self.open_image(output_filepath)
+            output["data"] = image
             output["face_found"] = True
             output["path"] = output_filepath
             # self.__upload_photo(image, output["path"].name)
 
-        base64_data = base64.encode(output["data"])
+        base64_data = base64.encodestring(output["data"])
         self.say(base64_data)
         self.say("Face Found: {}".format(str(output["face_found"])))
         self.say("Path: {}".format(output["path"].as_posix()))
