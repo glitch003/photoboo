@@ -96,7 +96,7 @@ def run():
     else:
         http_server.set_status(405)
         http_server.print_headers()
-        http_server.print_content("")
+        http_server.print_content(method)
 
 
 run()
