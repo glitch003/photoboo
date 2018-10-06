@@ -107,7 +107,7 @@ class PhotoBooManager(object):
         api_url = "https://20mission.org/photoboo/api/photos"
         payload = {
             "name": filename,
-            "data": base64.encode(image)
+            "data": base64.encodestring(image)
         }
         self.say("Uploading {} to {}".format(filename, api_url))
         requests.put(api_url, json=payload)
