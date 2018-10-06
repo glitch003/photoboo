@@ -51,7 +51,10 @@ def run():
     elif method == "PUT":
         conn = connect_to_mysql()
         photo_manager = PhotoManager(conn)
-        
+        post_data = http_server.get_post_json()
+        http_server.print_content(post_data)
+
+
         photo_manager.save_new_photo(
             post_data["name"],
             post_data["data"]
