@@ -77,12 +77,15 @@ def run():
 
     elif method == "PUT":
         post_data = http_server.get_post_json()
+
+        f = open("/tmp/photo_api.log", "w+")
+        f.write("post_data: {}".format(str(list(post_data.keys()))))
+        f.close()
         if "name" not in post_data or \
                 "data" not in post_data:
             http_server.set_status(400)
             http_server.print_headers()
             response = {}
-            response["type"] = type(post_data)
             if "name" in post_data:
                 response["name"] = post_data["name"]
             else:
