@@ -91,6 +91,9 @@ def run():
             else:
                 response["name"] = "false"
             http_server.print_json(response)
+            f = open("/tmp/photo_api.log", "w+")
+            f.write("ERROR: name or data not found")
+            f.close()
         else:
             conn = connect_to_mysql()
             photo_manager = PhotoManager(conn)
@@ -106,6 +109,9 @@ def run():
                 http_server.set_status(400)
                 http_server.print_headers()
                 http_server.print_content("")
+                f = open("/tmp/photo_api.log", "w+")
+                f.write("ERROR: problem inserting")
+                f.close()
 
             conn.close()
 
@@ -113,6 +119,9 @@ def run():
         http_server.set_status(405)
         http_server.print_headers()
         http_server.print_content(method)
+        f = open("/tmp/photo_api.log", "w+")
+        f.write("ERROR: method not allowed")
+        f.close()
 
 
 run()
