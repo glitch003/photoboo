@@ -81,7 +81,16 @@ def run():
                 "data" not in post_data:
             http_server.set_status(400)
             http_server.print_headers()
-            http_server.print_content("")
+            response = {}
+            if "name" in post_data:
+                response["name"] = post_data["name"]
+            else:
+                response["name"] = "false"
+            if "data" in post_data:
+                response["name"] = "true"
+            else:
+                response["name"] = "false"
+            http_server.print_json(response)
         else:
             conn = connect_to_mysql()
             photo_manager = PhotoManager(conn)
