@@ -105,13 +105,15 @@ class PhotoBooManager(object):
 
     def __upload_photo(self, image, filename):
         api_url = "https://20mission.org/photoboo/api/photos"
+        image_bytestring = cv2.imencode('.jpg', image)[1].tostring()
         payload = {
             "name": filename,
-            "data": base64.encodestring(image)
+            "data": base64.encodestring(image_bytestring).decode("utf-8")
         }
         self.say("Uploading {} to {}".format(filename, api_url))
-        requests.put(api_url, json=payload)
-        self.say("done")
+        response = requests.put(api_url, json=payload)
+        self.say("done: response: {}".format(str(response.status_code)))
+
 
     def say(self, message):
         print("[{}] {}".format(self.__class__.__name__, message))
