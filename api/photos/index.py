@@ -46,6 +46,7 @@ def run():
                     http_server.print_content("")
 
             else:
+                photo = photo_manager.get_photo_by_id(query_params["id"])
                 try:
                     photo = photo_manager.get_photo_by_id(query_params["id"])
                     http_server.set_status(200)
