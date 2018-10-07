@@ -104,7 +104,7 @@ class PhotoBooManager(object):
         return output_filepath
 
     def __upload_photo(self, image, filename):
-        api_url = "https://20mission.org/photoboo/api/photos"
+        api_url = "https://20mission.org/photoboo/api/photos/"
         image_bytestring = cv2.imencode('.jpg', image)[1].tostring()
         payload = {
             "name": filename,
