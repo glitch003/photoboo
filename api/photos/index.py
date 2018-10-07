@@ -82,6 +82,7 @@ def run():
             http_server.set_status(400)
             http_server.print_headers()
             response = {}
+            response["type"] = type(post_data)
             if "name" in post_data:
                 response["name"] = post_data["name"]
             else:
