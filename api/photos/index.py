@@ -50,6 +50,7 @@ def run():
                     photo = photo_manager.get_photo_by_id(query_params["id"])
                     http_server.set_status(200)
                     http_server.print_headers()
+                    print(query_params["id"])
                     http_server.print_json(photo)
                 except:
                     http_server.set_status(400)
