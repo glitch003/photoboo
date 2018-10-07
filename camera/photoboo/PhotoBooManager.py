@@ -112,6 +112,9 @@ class PhotoBooManager(object):
         }
         self.say("Uploading {} to {}".format(filename, api_url))
         response = requests.put(api_url, json=payload)
+        print(response.status_code)
+        print(response.headers)
+        print(response.text)
         self.say("done: response: {}".format(str(response.status_code)))
 
 
