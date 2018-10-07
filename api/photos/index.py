@@ -87,9 +87,9 @@ def run():
             else:
                 response["name"] = "false"
             if "data" in post_data:
-                response["name"] = "true"
+                response["data"] = "true"
             else:
-                response["name"] = "false"
+                response["data"] = "false"
             http_server.print_json(response)
             f = open("/tmp/photo_api.log", "w+")
             f.write("ERROR: name or data not found")
