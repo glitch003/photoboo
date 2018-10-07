@@ -27,7 +27,7 @@ def run():
     f = open("/tmp/photo_api.log", "w+")
     f.write("Method: {}\n".format(method))
     f.write("Query: {}\n".format(http_server.get_query_string()))
-    f.write("Payload: {}\n".format(http_server.get_post_json()))
+    # f.write("Payload: {}\n".format(http_server.get_post_json()))
     f.write("===========================\n")
     f.close()
 

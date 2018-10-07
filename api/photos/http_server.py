@@ -81,7 +81,6 @@ class HttpServer:
 
     def get_post_json(self):
         post_data = {}
-        post_data = json.load(self.payload)
         try:
             post_data = json.load(self.payload)
         except:
