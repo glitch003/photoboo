@@ -47,13 +47,11 @@ def run():
 
             else:
                 photo = photo_manager.get_photo_by_id(query_params["id"])
-                try:
-                    photo = photo_manager.get_photo_by_id(query_params["id"])
+                if len(photo) > 0:
                     http_server.set_status(200)
                     http_server.print_headers()
-                    print(query_params["id"])
                     http_server.print_json(photo)
-                except:
+                else:
                     http_server.set_status(400)
                     http_server.print_headers()
                     http_server.print_content("")
