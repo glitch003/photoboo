@@ -62,7 +62,6 @@ class PhotoManager:
             cleaned_name,
             cleaned_data
         )
-        print("query: {}".format(query))
         cur.execute(query)
         self.sql_connection.commit()
         cur.close()

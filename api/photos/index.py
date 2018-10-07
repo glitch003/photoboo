@@ -109,6 +109,9 @@ def run():
                 http_server.set_status(201)
                 http_server.print_headers()
                 http_server.print_content("")
+                f = open("/tmp/photo_api.log", "w+")
+                f.write("inserted photo")
+                f.close()
             except:
                 http_server.set_status(400)
                 http_server.print_headers()
