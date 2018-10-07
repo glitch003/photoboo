@@ -76,7 +76,6 @@ def run():
         conn.close()
 
     elif method == "PUT":
-        photo_manager = PhotoManager(conn)
         post_data = http_server.get_post_json()
         if "name" not in post_data or \
                 "data" not in post_data:
@@ -85,6 +84,7 @@ def run():
             http_server.print_content("")
         else:
             conn = connect_to_mysql()
+            photo_manager = PhotoManager(conn)
             try:
                 photo_manager.save_new_photo(
                     post_data["name"],
