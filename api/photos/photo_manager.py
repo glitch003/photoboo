@@ -17,8 +17,8 @@ class PhotoManager:
         
         PHOTO_ID = 0
         PHOTO_NAME = 1
-        PHOTO_DATA = 3
-        PHOTO_CTIME = 4
+        PHOTO_DATA = 2
+        PHOTO_CTIME = 3
 
         photo = {}
         for row in cur:
