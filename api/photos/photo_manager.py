@@ -8,8 +8,9 @@ class PhotoManager:
 
     def get_photo_by_id(self, id):
         cur = self.sql_connection.cursor()
-        cleaned_id = self.sql_connection.escape(id)
+        cleaned_id = self.sql_connection.escape(int(id))
         query = "SELECT `id`,`name`, TO_BASE64(`data`) as `base64_data`, `ctime` FROM `{}` WHERE `id`={};".format(
+            self.table_name;
             cleaned_id
         )
         cur.execute(query)
