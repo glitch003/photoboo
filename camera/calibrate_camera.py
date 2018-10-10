@@ -37,23 +37,34 @@ with picamera.PiCamera() as camera:
 '''
 
 
-with picamera.PiCamera() as camera:
-    camera.resolution = (1280, 720)
-    # Set a framerate of 1/6fps, then set shutter
-    # speed to 6s and ISO to 800
-    camera.framerate = Fraction(1, 6)
-    camera.shutter_speed = 6000000
-    camera.exposure_mode = 'off'
-    camera.iso = 800
-    # Give the camera a good long time to measure AWB
-    # (you may wish to use fixed AWB instead)
-    sleep(10)
-    # Finally, capture an image with a 6s exposure. Due
-    # to mode switching on the still port, this will take
-    # longer than 6 seconds
-    camera.capture('dark.jpg')
-    image = cv2.imread('dark.jpg', cv2.IMREAD_GRAYSCALE)
-    filename = "test_{}.jpg".format(str(int(round(time.time()))))
-    print("filename: {}".format(filename))
-    upload_photo(image, filename)
+#with picamera.PiCamera() as camera:
+camera = picamera.PiCamera()
 
+
+#camera.resolution = (1280, 720)
+camera.resolution = (800, 600)
+# Set a framerate of 1/6fps, then set shutter
+# speed to 6s and ISO to 800
+#camera.framerate = Fraction(1, 1)
+#camera.shutter_speed = 6000000
+camera.shutter_speed = 50000
+camera.exposure_compensation = 25
+#camera.exposure_mode = 'off'
+#camera.iso = 800
+camera.iso = 0
+camera.awb_mode = "off"
+camera.exposure_mode = "sports"
+# Give the camera a good long time to measure AWB
+# (you may wish to use fixed AWB instead)
+sleep(1)
+# Finally, capture an image with a 6s exposure. Due
+# to mode switching on the still port, this will take
+# longer than 6 seconds
+camera.capture('dark.jpg')
+image = cv2.imread('dark.jpg', cv2.IMREAD_GRAYSCALE)
+filename = "test_{}.jpg".format(str(int(round(time.time()))))
+print("filename: {}".format(filename))
+upload_photo(image, filename)
+
+
+camera.close()
