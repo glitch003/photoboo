@@ -2,6 +2,8 @@
 import time
 import picamera
 import requests
+from time import sleep
+from fractions import Fraction
 
 
 def upload_photo(image, filename):
