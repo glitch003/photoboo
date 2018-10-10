@@ -48,7 +48,7 @@ class FaceCropper(object):
         return cv2.LUT(image.astype(np.uint8), table.astype(np.uint8))
 
     def auto_adjust_levels(self, image):
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(4,4))
         adjusted_image = clahe.apply(image)
         return adjusted_image
 
