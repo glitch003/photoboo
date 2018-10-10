@@ -44,6 +44,7 @@ class PhotoBooManager(object):
             raise SystemExit
 
         camera.capture(tmp_image_filepath.as_posix())
+        camera.close()
         return tmp_image_filepath.as_posix()
 
     def open_image(self, filename):

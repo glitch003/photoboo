@@ -43,7 +43,7 @@ def main():
 
     photo_boo = PhotoBooManager()
 
-    last_button_state = 0
+    last_button_state = button_up
     try:
         while True:
             current_button_state = GPIO.input(button_pin_id)
