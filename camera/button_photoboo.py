@@ -5,6 +5,7 @@ from photoboo.PhotoBooManager import PhotoBooManager
 import RPi.GPIO as GPIO
 
 button_pin_id = 11
+button_mode = GPIO.PUD_UP
 
 def build_command_parser():
     parser = argparse.ArgumentParser(
@@ -23,13 +24,19 @@ def exit_handler():
     print("Exiting... cleaning up GPIO")
     GPIO.cleanup()
 
-def setup_gpio_for_button(pin_id):
+def setup_gpio_for_button(pin_id, button_mode):
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(pin_id, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(pin_id, GPIO.IN, pull_up_down=button_mode)
 
 def main():
+    button_down = 1
+    button_up = 0
+    if button_mode == GPIO.PUD_UP:
+        button_down = 0
+        button_up = 1
+
     atexit.register(exit_handler)
-    setup_gpio_for_button(button_pin_id)
+    setup_gpio_for_button(button_pin_id, button_mode)
 
     command_parser = build_command_parser()
     command_arguments = command_parser.parse_args()
@@ -41,7 +48,7 @@ def main():
         while True:
             current_button_state = GPIO.input(button_pin_id)
             if current_button_state != last_button_state:
-                if (current_button_state == 1):
+                if (current_button_state == button_down):
                     print("Button Down")
                     last_button_state
                     image_filepath = command_arguments.image
