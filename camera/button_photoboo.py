@@ -39,6 +39,8 @@ def main():
                     image_filepath = photo_boo.take_photo()
 
                 image = photo_boo.ghostify(image_filepath)
+    except:
+        pass
 
 
 if __name__ == "__main__":
