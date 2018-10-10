@@ -35,10 +35,10 @@ def display(image_data, title="", time_s=None):
 
 camera = picamera.PiCamera()
 camera.resolution = (800, 600)
-camera.shutter_speed = 50000
+camera.shutter_speed = 5000
 camera.exposure_compensation = 25
 camera.exposure_mode = "night"
-camera.awb_mode = "off"
+camera.awb_mode = "on"
 sleep(1)
 
 save_folder = Path("/tmp/images")
