@@ -71,7 +71,7 @@ class PhotoBooManager(object):
             output["path"] = image_filepath
         else:
             output_filepath = self.__take_photoboo_photo(image)
-            image = self.open_image(output_filepath)
+            image = self.open_image(output_filepath.as_posix())
             output["data"] = image
             output["face_found"] = True
             output["path"] = output_filepath
