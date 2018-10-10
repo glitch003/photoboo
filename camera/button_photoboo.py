@@ -21,7 +21,7 @@ def build_command_parser():
 
 def setup_gpio_for_button(pin_id):
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(pin_id, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(pin_id, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def main():
     setup_gpio_for_button(button_pin_id)
