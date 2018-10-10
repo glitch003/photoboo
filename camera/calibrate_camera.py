@@ -15,9 +15,9 @@ def upload_photo(image, filename):
         "name": filename,
         "data": base64.encodestring(image_bytestring).decode("utf-8")
     }
-    self.say("Uploading {} to {}".format(filename, api_url))
+    print("Uploading {} to {}".format(filename, api_url))
     response = requests.put(api_url, json=payload)
-    self.say("done: response: {}".format(str(response.status_code)))
+    print("done: response: {}".format(str(response.status_code)))
 
 
 '''
