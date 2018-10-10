@@ -60,7 +60,7 @@ class PhotoBooManager(object):
 
     def ghostify(self, image_filepath):
         raw_image = self.open_image(image_filepath)
-        image = self.photo_boo.face_cropper.auto_adjust_levels(raw_image)
+        image = raw_image # self.photo_boo.face_cropper.auto_adjust_levels(raw_image)
         output = {}
         does_face_exist = self.photo_boo.does_face_exist(image)
 
