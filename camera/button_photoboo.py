@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import atexit
 import argparse
 from photoboo.PhotoBooManager import PhotoBooManager
 import RPi.GPIO as GPIO
@@ -18,12 +19,16 @@ def build_command_parser():
         help='Print debugging messages')
     return parser
 
+def exit_handler():
+    print("Exiting... cleaning up GPIO")
+    GPIO.cleanup()
 
 def setup_gpio_for_button(pin_id):
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(pin_id, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def main():
+    atexit.register(exit_handler)
     setup_gpio_for_button(button_pin_id)
 
     command_parser = build_command_parser()
