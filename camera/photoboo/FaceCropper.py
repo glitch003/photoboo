@@ -47,6 +47,11 @@ class FaceCropper(object):
             for i in np.arange(0, 256)])
         return cv2.LUT(image.astype(np.uint8), table.astype(np.uint8))
 
+    def auto_adjust_levels(self, image):
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+        adjusted_image = clahe.apply(image)
+        return adjusted_image
+
     def get_face_bounding_box(self, image):
         face_data_path = self.__get_real_path() / self.face_data_filename
         self.say("Finding bounding box for face in image... ", "")
