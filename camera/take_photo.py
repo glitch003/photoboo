@@ -5,6 +5,12 @@ import requests
 from time import sleep
 import cv2
 import base64
+import os
+try:
+    from pathlib import Path
+except (ImportError, AttributeError):
+    from pathlib2 import Path
+Path().expanduser()
 
 
 def upload_photo(image, filename):
@@ -34,6 +40,11 @@ camera.exposure_compensation = 25
 camera.exposure_mode = "night"
 camera.awb_mode = "off"
 sleep(1)
+
+save_folder = Path("/tmp/images")
+does_folder_exist = save_folder.exists()
+if does_folder_exist is False:
+    save_folder.mkdir()
 
 filename = "test_{}.jpg".format(str(int(round(time.time()))))
 camera.capture('/tmp/images/{}'.format(filename))
