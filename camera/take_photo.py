@@ -48,9 +48,11 @@ if does_folder_exist is False:
 
 for i in range(0, 50):
     filename = "test_{}.jpg".format(str(int(round(time.time()))))
+    print("Taking photo: {}".format(filename))
     camera.capture('/tmp/images/{}'.format(filename))
+    print("Pausing...")
     time.sleep(2)
-    
+
 camera.close()
 image = cv2.imread('/tmp/images/{}'.format(filename))
 print("filename: {}".format(filename))
