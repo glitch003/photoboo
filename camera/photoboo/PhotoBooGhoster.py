@@ -84,10 +84,12 @@ class PhotoBooGhoster(object):
             min_y = min(y, min_y)
             max_x = max(x, max_x)
             max_y = max(y, max_y)
-        try:
-            width, height, channels = image.shape
-        except:
+
+        if len(image.shape) == 2:
             width, height = image.shape
+        else:
+            width. height, channels = image.shape
+
         image_bounds = (0, 0, width, height)
         triangles = self.face_cropper.get_deluanay_triangles_from_landmarks(
             landmarks,
@@ -133,10 +135,10 @@ class PhotoBooGhoster(object):
         # modified from:
         # https://www.packtpub.com/mapt/book/application_development/9781785283932/2/ch02lvl1sec21/motion-blur
         # generating the kernel
-        try:
-            width, height, channels = image.shape
-        except:
+        if len(image.shape) == 2:
             width, height = image.shape
+        else:
+            width, height, channels = image.shape
         size = int(width / 30)
 
         kernel_motion_blur = np.zeros((size, size))
@@ -153,15 +155,16 @@ class PhotoBooGhoster(object):
         pts = np.array(face_shape_points).astype(np.int)
         mask = 0 * np.ones(background_image.shape, background_image.dtype)
         cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
-        try:
-            width, height, channels = face_image.shape
-        except:
+
+        if len(face_image.shape) == 2:
             width, height = face_image.shape
             face_image = cv2.cvtColor(face_image, cv2.COLOR_GRAY2RGB)
             background_image = cv2.cvtColor(
                 background_image,
                 cv2.COLOR_GRAY2RGB
             )
+        else:
+            width, height, channels = face_image.shape
         center = (
             int(round(min_x + (max_x - min_x)/2)),
             int(round(min_y + (max_y - min_y)/2))
