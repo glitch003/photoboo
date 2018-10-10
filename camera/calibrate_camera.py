@@ -5,6 +5,7 @@ import requests
 from time import sleep
 from fractions import Fraction
 import cv2
+import base64
 
 
 def upload_photo(image, filename):
