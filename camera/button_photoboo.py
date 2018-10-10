@@ -31,14 +31,25 @@ def main():
 
     photo_boo = PhotoBooManager()
 
+    last_button_state = 0
     try:
         while True:
-            if (GPIO.input(button_pin_id) == 1):
-                image_filepath = command_arguments.image
-                if image_filepath is None:
-                    image_filepath = photo_boo.take_photo()
+            current_button_state = GPIO.input(button_pin_id)
+            if current_button_state != last_button_state:
+                if (current_button_state == 1):
+                    print("Button Down")
+                    last_button_state
+                    image_filepath = command_arguments.image
+                    if image_filepath is None:
+                        image_filepath = photo_boo.take_photo()
 
-                image = photo_boo.ghostify(image_filepath)
+                    image = photo_boo.ghostify(image_filepath)
+                else:
+                    print("Button Up")
+
+                last_button_state = current_button_state
+
+
     except:
         pass
 
