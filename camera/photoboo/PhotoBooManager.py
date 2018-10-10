@@ -42,7 +42,8 @@ class PhotoBooManager(object):
                 images_folder.as_posix()
             ))
             raise SystemExit
-
+        # give camera time to warm up
+        time.sleep(2)
         camera.capture(tmp_image_filepath.as_posix())
         camera.close()
         return tmp_image_filepath.as_posix()
