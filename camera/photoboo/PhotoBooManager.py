@@ -67,7 +67,6 @@ class PhotoBooManager(object):
             output["data"] = image
             output["face_found"] = True
             output["path"] = output_filepath
-        print(output["path"])
         self.__upload_photo(image, Path(output["path"]).name)
 
         base64_data = base64.encodestring(output["data"])
@@ -112,9 +111,6 @@ class PhotoBooManager(object):
         }
         self.say("Uploading {} to {}".format(filename, api_url))
         response = requests.put(api_url, json=payload)
-        print(response.status_code)
-        print(response.headers)
-        print(response.text)
         self.say("done: response: {}".format(str(response.status_code)))
 
 
