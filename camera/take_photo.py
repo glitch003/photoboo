@@ -46,8 +46,11 @@ does_folder_exist = save_folder.exists()
 if does_folder_exist is False:
     save_folder.mkdir()
 
-filename = "test_{}.jpg".format(str(int(round(time.time()))))
-camera.capture('/tmp/images/{}'.format(filename))
+for i in range(0, 50):
+    filename = "test_{}.jpg".format(str(int(round(time.time()))))
+    camera.capture('/tmp/images/{}'.format(filename))
+    time.sleep(2)
+    
 camera.close()
 image = cv2.imread('/tmp/images/{}'.format(filename))
 print("filename: {}".format(filename))
