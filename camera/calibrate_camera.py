@@ -4,6 +4,7 @@ import picamera
 import requests
 from time import sleep
 from fractions import Fraction
+import cv2
 
 
 def upload_photo(image, filename):
@@ -52,5 +53,6 @@ with picamera.PiCamera() as camera:
     camera.capture('dark.jpg')
     image = cv2.imread('dark.jpg', cv2.IMREAD_GRAYSCALE)
     filename = "test_{}.jpg".format(str(int(round(time.time()))))
+    print("filename: {}".format(filename))
     upload_photo(image, filename)
 
