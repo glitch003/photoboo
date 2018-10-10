@@ -34,9 +34,10 @@ camera.exposure_compensation = 25
 camera.exposure_mode = "night"
 camera.awb_mode = "off"
 sleep(1)
-camera.capture('/tmp/images/tmp.jpg')
-camera.close()
-image = cv2.imread('/tmp/images/tmp.jpg')
+
 filename = "test_{}.jpg".format(str(int(round(time.time()))))
+camera.capture('/tmp/images/{}'.format(filename))
+camera.close()
+image = cv2.imread('/tmp/images/{}'.format(filename))
 print("filename: {}".format(filename))
 upload_photo(image, filename)
