@@ -21,7 +21,7 @@ except (ImportError, AttributeError):
 class PhotoBooManager(object):
     camera = None
     photo_boo = None
-    images_folder = Path("photoboo/images")
+    images_folder = Path('/tmp/images') # Path("photoboo/images")
     background_filename = Path("background.jpg")
 
     def __init__(self):
