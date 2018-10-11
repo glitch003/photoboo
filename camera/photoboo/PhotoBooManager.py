@@ -53,7 +53,7 @@ class PhotoBooManager(object):
         camera.close()
 
         image = self.open_image(tmp_image_filename)
-        undistorted_image = self.undo_fisheye(image)
+        undistorted_image = self.photo_boo.face_cropper.undo_fisheye(image)
         self.photo_boo.save_image(
             undistorted_image,
             tmp_image_filename
