@@ -33,7 +33,7 @@ class FaceCropper(object):
 
     def open_image(self, image_filename, greyscale=False):
         if greyscale is True:
-            image = cv2.imread(image_filename, cv2.IMREAD_GRAYSCALE)
+            image = cv2.imread(image_filename) # , cv2.IMREAD_GRAYSCALE)
         else:
             image = cv2.imread(image_filename)
         return image
