@@ -40,13 +40,13 @@ class FaceCropper(object):
 
     def undo_fisheye(self, image):
         # These values were derived from the calebrate_fisheye script
-        DIM=(800, 600)
-        K=np.array([
+        DIM = (800, 600)
+        K = np.array([
             [1047.0428993249554, 0.0, 409.3774656935277],
             [0.0, 1033.5648885354271, 249.71887499932328],
             [0.0, 0.0, 1.0]
         ])
-        D=np.array([
+        D = np.array([
             [-0.05410509676672891],
             [-8.036577386132445],
             [120.34638969712154],
@@ -63,7 +63,7 @@ class FaceCropper(object):
             cv2.CV_16SC2
         )
         undistorted_image = cv2.remap(
-            img,
+            image,
             map1,
             map2,
             interpolation=cv2.INTER_LINEAR,
