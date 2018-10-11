@@ -74,7 +74,7 @@ class PhotoManager:
                 "id": row[PHOTO_ID],
                 "name": row[PHOTO_NAME],
                 "data": row[PHOTO_DATA],
-                "url": path.as_posix().replace("/var/www/20mission.org/www", "")
+                "url": path.as_posix().replace("/var/www/20mission.org/www", ""),
                 "ctime": int(row[PHOTO_CTIME].timestamp())
             }
         cur.close()
@@ -99,7 +99,7 @@ class PhotoManager:
                 "id": row[PHOTO_ID],
                 "name": row[PHOTO_NAME],
                 "data": row[PHOTO_DATA],
-                "url": path.as_posix().replace("/var/www/20mission.org/www", "")
+                "url": path.as_posix().replace("/var/www/20mission.org/www", ""),
                 "ctime": int(row[PHOTO_CTIME].timestamp())
             }
         cur.close()
@@ -139,7 +139,7 @@ class PhotoManager:
                 path = images_folder_path / self.__clean_filename(raw[PHOTO_NAME])
                 "id": row[PHOTO_ID],
                 "name": row[PHOTO_NAME],
-                "url": path.as_posix().replace("/var/www/20mission.org/www", "")
+                "url": path.as_posix().replace("/var/www/20mission.org/www", ""),
                 "ctime": int(row[PHOTO_CTIME].timestamp())
             }
             photos.append(photo)
