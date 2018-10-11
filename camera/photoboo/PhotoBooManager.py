@@ -52,11 +52,11 @@ class PhotoBooManager(object):
         camera.capture(tmp_image_filepath.as_posix())
         camera.close()
 
-        image = self.open_image(tmp_image_filename.as_posix())
+        image = self.open_image(tmp_image_filepath.as_posix())
         undistorted_image = self.photo_boo.face_cropper.undo_fisheye(image)
         self.photo_boo.save_image(
             undistorted_image,
-            tmp_image_filename.as_posix()
+            tmp_image_filepath.as_posix()
         )
         return tmp_image_filepath.as_posix()
 
