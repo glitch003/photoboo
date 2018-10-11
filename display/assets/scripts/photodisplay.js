@@ -122,12 +122,18 @@ PhotoDisplay.prototype.displayPhoto = function(photo) {
 		);
 		loadingPhoto.css({opacity: 0.0});
   	});
-  	*/
+  	/* */
+  	/*
 	$("#photo").attr(
 		"src",
 		"data:image/jpg;base64," + photo.data
 	);
 	/* */
+	var img = new Image();
+	img.src = photo.data;
+	$("#photo").css("background-image", "url('" + img.src + "')");
+	/* */
+
 }
 
 PhotoDisplay.prototype.displayError = function(message) {

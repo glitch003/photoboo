@@ -15,6 +15,7 @@ pip install scikit-image
 pip install picamera
 pip install pathlib2
 pip install requests
+pip install imutils
 
 apt-get install -y libtiff5-dev libjasper-dev libpng12-dev
 apt-get install -y libjpeg-dev

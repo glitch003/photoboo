@@ -9,9 +9,9 @@ import cv2
 import time
 try:
     from pathlib import Path
-    Path().expanduser()
 except (ImportError, AttributeError):
     from pathlib2 import Path
+Path().expanduser()
 try:
     from picamera import PiCamera
 except (ImportError, AttributeError):
@@ -53,6 +53,7 @@ class PhotoBooManager(object):
         camera.close()
 
         image = self.open_image(tmp_image_filepath.as_posix())
+        # remove fisheye distortion
         undistorted_image = self.photo_boo.face_cropper.undo_fisheye(image)
         self.photo_boo.save_image(
             undistorted_image,
@@ -82,7 +83,13 @@ class PhotoBooManager(object):
             output["data"] = image
             output["face_found"] = True
             output["path"] = output_filepath
-        self.__upload_photo(image, Path(output["path"]).name)
+
+        # rotate image 90 degrees
+        rotated_image = self.photo_boo.face_cropper.rotate(
+            image,
+            angle_degrees=90
+        )
+        self.__upload_photo(rotated_image, Path(output["path"]).name)
 
         base64_data = base64.encodestring(output["data"])
         # self.say(base64_data)

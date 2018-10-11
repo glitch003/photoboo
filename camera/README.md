@@ -10,6 +10,7 @@ Created for the 20Mission Ghosted (Party) at Public Works in San Francisco on Ha
 - pathlib2
 - numpy
 - picamera
+- imutils
 
 ```
 $ pip install python-opencv
@@ -17,6 +18,7 @@ $ pip install dlib
 $ pip install pathlib2
 $ pip install numpy
 $ pip install picamera
+$ pip install imutils
 ```
 
 Be sure to enable your camera in the raspi-config

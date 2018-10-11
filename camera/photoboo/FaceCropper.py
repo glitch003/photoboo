@@ -85,6 +85,32 @@ class FaceCropper(object):
         adjusted_image = clahe.apply(image)
         return adjusted_image
 
+    def rotate(self, image, angle_degrees=90):
+        # modified from:
+        # https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
+        # grab the dimensions of the image and then determine the
+        # center
+        height, width = image.shape[:2]
+        center_x, center_y = (width // 2, height // 2)
+     
+        # grab the rotation matrix (applying the negative of the
+        # angle to rotate clockwise), then grab the sine and cosine
+        # (i.e., the rotation components of the matrix)
+        M = cv2.getRotationMatrix2D((center_x, center_y), -angle_degrees, 1.0)
+        cos = np.abs(M[0, 0])
+        sin = np.abs(M[0, 1])
+     
+        # compute the new bounding dimensions of the image
+        new_width = int((height * sin) + (width * cos))
+        new_height = int((height * cos) + (width * sin))
+     
+        # adjust the rotation matrix to take into account translation
+        M[0, 2] += (new_width / 2) - center_x
+        M[1, 2] += (new_height / 2) - center_y
+     
+        # perform the actual rotation and return the image
+        return cv2.warpAffine(image, M, (new_width, new_height))
+
     def get_face_bounding_box(self, image):
         face_data_path = self.__get_real_path() / self.face_data_filename
         self.say("Finding bounding box for face in image... ", "")
