@@ -135,8 +135,8 @@ class PhotoManager:
 
         images_folder_path = self.__get_save_folder_path()
         for row in cur:
+            path = images_folder_path / self.__clean_filename(raw[PHOTO_NAME])
             photo = {
-                path = images_folder_path / self.__clean_filename(raw[PHOTO_NAME])
                 "id": row[PHOTO_ID],
                 "name": row[PHOTO_NAME],
                 "url": path.as_posix().replace("/var/www/20mission.org/www", ""),
