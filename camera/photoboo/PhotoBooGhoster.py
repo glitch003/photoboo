@@ -139,7 +139,9 @@ class PhotoBooGhoster(object):
             width, height = image.shape
         else:
             width, height, channels = image.shape
-        size = int(width / 30)
+
+        percent_blur = 10.0
+        size = int(width * (percent_blur / 100.0))
 
         kernel_motion_blur = np.zeros((size, size))
         kernel_motion_blur[int((size-1)/2), :] = np.ones(size)
