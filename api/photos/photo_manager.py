@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 import base64
 import string
 Path().expanduser()
@@ -52,7 +51,6 @@ class PhotoManager:
         file_name = ''.join(c for c in name if c in valid_chars)
         return file_name
 
-
     def get_photo_by_id(self, id):
         cur = self.sql_connection.cursor()
         cleaned_id = self.sql_connection.escape(int(id))
@@ -61,7 +59,7 @@ class PhotoManager:
             cleaned_id
         )
         cur.execute(query)
-        
+
         PHOTO_ID = 0
         PHOTO_NAME = 1
         PHOTO_DATA = 2
@@ -69,12 +67,15 @@ class PhotoManager:
 
         photo = {}
         for row in cur:
-            path = self.__get_save_folder_path() / self.__clean_filename(raw[PHOTO_NAME])
+            path = self.__get_save_folder_path() / self.__clean_filename(row[PHOTO_NAME])
             photo = {
                 "id": row[PHOTO_ID],
                 "name": row[PHOTO_NAME],
                 "data": row[PHOTO_DATA],
-                "url": path.as_posix().replace("/var/www/20mission.org/www", ""),
+                "url": path.as_posix().replace(
+                    "/var/www/20mission.org/www",
+                    ""
+                ),
                 "ctime": int(row[PHOTO_CTIME].timestamp())
             }
         cur.close()
@@ -86,7 +87,7 @@ class PhotoManager:
             self.table_name
         )
         cur.execute(query)
-        
+
         PHOTO_ID = 0
         PHOTO_NAME = 1
         PHOTO_DATA = 2
@@ -94,12 +95,15 @@ class PhotoManager:
 
         photo = {}
         for row in cur:
-            path = self.__get_save_folder_path() / self.__clean_filename(raw[PHOTO_NAME])
+            path = self.__get_save_folder_path() / self.__clean_filename(row[PHOTO_NAME])
             photo = {
                 "id": row[PHOTO_ID],
                 "name": row[PHOTO_NAME],
                 "data": row[PHOTO_DATA],
-                "url": path.as_posix().replace("/var/www/20mission.org/www", ""),
+                "url": path.as_posix().replace(
+                    "/var/www/20mission.org/www",
+                    ""
+                ),
                 "ctime": int(row[PHOTO_CTIME].timestamp())
             }
         cur.close()
@@ -135,11 +139,14 @@ class PhotoManager:
 
         images_folder_path = self.__get_save_folder_path()
         for row in cur:
-            path = images_folder_path / self.__clean_filename(raw[PHOTO_NAME])
+            path = images_folder_path / self.__clean_filename(row[PHOTO_NAME])
             photo = {
                 "id": row[PHOTO_ID],
                 "name": row[PHOTO_NAME],
-                "url": path.as_posix().replace("/var/www/20mission.org/www", ""),
+                "url": path.as_posix().replace(
+                    "/var/www/20mission.org/www",
+                    ""
+                ),
                 "ctime": int(row[PHOTO_CTIME].timestamp())
             }
             photos.append(photo)

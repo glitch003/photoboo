@@ -22,6 +22,7 @@ def connect_to_mysql():
     )
     return conn
 
+
 def run():
     method = http_server.get_method()
     f = open("/tmp/photo_api.log", "w+")
