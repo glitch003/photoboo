@@ -38,6 +38,39 @@ class FaceCropper(object):
             image = cv2.imread(image_filename)
         return image
 
+    def undo_fisheye(self, image):
+        # These values were derived from the calebrate_fisheye script
+        DIM=(800, 600)
+        K=np.array([
+            [1047.0428993249554, 0.0, 409.3774656935277],
+            [0.0, 1033.5648885354271, 249.71887499932328],
+            [0.0, 0.0, 1.0]
+        ])
+        D=np.array([
+            [-0.05410509676672891],
+            [-8.036577386132445],
+            [120.34638969712154],
+            [-509.445110952727]
+        ])
+
+        width, height = image.shape[:2]
+        map1, map2 = cv2.fisheye.initUndistortRectifyMap(
+            K,
+            D,
+            np.eye(3),
+            K,
+            DIM,
+            cv2.CV_16SC2
+        )
+        undistorted_image = cv2.remap(
+            img,
+            map1,
+            map2,
+            interpolation=cv2.INTER_LINEAR,
+            borderMode=cv2.BORDER_CONSTANT
+        )
+        return undistorted_image
+
     def adjust_gamma(self, image, gamma=1.0):
         # taken from:
         # https://stackoverflow.com/a/51174313/9193553
