@@ -102,15 +102,12 @@ PhotoDisplay.prototype.getLatestPhoto = function() {
 }
 
 PhotoDisplay.prototype.displayPhoto = function(photo) {
-	/*
 	console.log("Displaying photo:");
 	loadingPhoto = $("#loading_photo");
 	loadedPhoto = $("#loaded_photo");
 	loadingPhoto.css({ opacity: 0.0 });
-	data = photo["data"];
-	background = 'url(data:image/jpg;base64,' + data + ')'; 
-	console.log(data.substring(0, 10));
-	console.log(background.substring(0, 100));
+	url = "https://20mission.org" + photo.url;
+	background = 'url(' + url + ')';
 	loadingPhoto.css(
 		"background-image",
 		background
@@ -129,9 +126,9 @@ PhotoDisplay.prototype.displayPhoto = function(photo) {
 		"data:image/jpg;base64," + photo.data
 	);
 	/* */
-	var img = new Image();
-	img.src = photo.data;
-	$("#photo").css("background-image", "url('" + img.src + "')");
+	/*
+	url = "https://20mission.org" + photo.url;
+	$("#photo").css("background-image", "url('" + url + "')");
 	/* */
 
 }

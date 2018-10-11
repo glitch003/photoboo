@@ -32,7 +32,7 @@ class PhotoManager:
         path = self.__get_save_folder_path()
         file_path = path / filename
         try:
-            image = base64.decodestring(image_data)
+            image = base64.b64decode(image_data)
             f = open(file_path.as_posix(), "wb")
             f.write(image)
             f.close()
