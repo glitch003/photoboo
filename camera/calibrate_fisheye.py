@@ -73,6 +73,7 @@ def undistort(img_path):
     cv2.imshow("undistorted", undistorted_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
 if __name__ == '__main__':
     for p in sys.argv[1:]:
         undistort(p)

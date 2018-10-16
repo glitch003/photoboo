@@ -8,7 +8,7 @@ class PhotoManager:
 
     sql_connection = None
     table_name = "photoboo_photos"
-    save_folder = "../../../images/"
+    save_folder = "/tmp/photos/"
 
     def __init__(self, sql_connection):
         self.sql_connection = sql_connection
