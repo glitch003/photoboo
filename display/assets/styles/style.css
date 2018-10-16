@@ -30,10 +30,12 @@ body {
     background-position: 50% 50%;
 }
 #loaded_photo {
-	background-color: #f00;
+	/* background-color: #f00; */
+	background-color: #000;
 }
 #loading_photo {
-	background-color: #0f0;
+	/* background-color: #0f0; */
+	background-color: #000;
 }
 .start_hidden {
 	display: none;

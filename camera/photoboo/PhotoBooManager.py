@@ -68,7 +68,11 @@ class PhotoBooManager(object):
 
     def ghostify(self, image_filepath):
         raw_image = self.open_image(image_filepath)
-        image = self.photo_boo.face_cropper.auto_adjust_levels(raw_image)
+        raw_rotated_image = self.photo_boo.face_cropper.rotate(
+            raw_image,
+            angle_degrees=90
+        )
+        image = self.photo_boo.face_cropper.auto_adjust_levels(raw_rotated_image)
         output = {}
         does_face_exist = self.photo_boo.does_face_exist(image)
 
@@ -78,18 +82,17 @@ class PhotoBooManager(object):
             output["face_found"] = False
             output["path"] = image_filepath
         else:
-            output_filepath = self.__take_photoboo_photo(image)
+            try:
+                output_filepath = self.__take_photoboo_photo(image)
+            except:
+                output_filepath = image_filepath
             image = self.open_image(output_filepath.as_posix())
             output["data"] = image
             output["face_found"] = True
             output["path"] = output_filepath
 
         # rotate image 90 degrees
-        rotated_image = self.photo_boo.face_cropper.rotate(
-            image,
-            angle_degrees=90
-        )
-        self.__upload_photo(rotated_image, Path(output["path"]).name)
+        self.__upload_photo(image, Path(output["path"]).name)
 
         base64_data = base64.encodestring(output["data"])
         # self.say(base64_data)
