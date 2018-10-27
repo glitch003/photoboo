@@ -44,19 +44,18 @@ class PhotoBooManager(object):
         output = {}
         does_face_exist = self.photo_boo.does_face_exist(image)
 
-        finished_image = image
-        if does_face_exist is False:
-            output_filepath = image_filepath
-        else:
+        intermediate_image = image
+        output_filepath = image_filepath
+        if does_face_exist is True:
             try:
                 output_filepath = self.__take_photoboo_photo(image)
-                finished_image = self.open_image(output_filepath.as_posix())
+                intermediate_image = self.open_image(output_filepath.as_posix())
             except:
-                output_filepath = image_filepath
+                pass
 
         finished_image = self.photo_boo.face_cropper.rotate(
-            finished_image,
-            angle_degrees=-90
+            intermediate_image,
+            angle_degrees=90
         )
         self.photo_boo.save_image(finished_image, output_filepath.as_posix())
         output["data"] = finished_image
