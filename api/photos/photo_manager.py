@@ -39,13 +39,14 @@ class PhotoManager:
                 file_path.as_posix()
             ))
             self.say("===========================\n")
+        return file_path
 
     def __process_image(self, raw_image, filename):
         temp_filename = filename.replace(".", "_original.")
-        self.say("new filename: {}".format(temp_filename))
-        self.__save_image_to_disk(raw_image, temp_filename)
+        saved_filepath = self.__save_image_to_disk(raw_image, temp_filename)
+        self.say("new filename: {}".format(saved_filepath))
         photo_boo = PhotoBooManager()
-        image_metadata = photo_boo.ghostify(temp_filename)
+        image_metadata = photo_boo.ghostify(saved_filepath.as_posix())
         image = image_metadata["bytestring_data"]
         return image
 
