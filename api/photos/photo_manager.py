@@ -21,12 +21,10 @@ class PhotoManager:
             try:
                 real_path.mkdir()
             except:
-                f = open("/tmp/photo_api.log", "w+")
-                f.write("Error: could not create folder: {}\n".format(
+                self.say("Error: could not create folder: {}\n".format(
                     real_path.as_posix()
                 ))
-                f.write("===========================\n")
-                f.close()
+                self.say("===========================\n")
         return real_path
 
     def __save_image_to_disk(self, image_data, filename):
@@ -37,12 +35,10 @@ class PhotoManager:
             f.write(image_data)
             f.close()
         except:
-            f = open("/tmp/photo_api.log", "w+")
-            f.write("Error: could save file: {}\n".format(
+            self.say("Error: could save file: {}\n".format(
                 file_path.as_posix()
             ))
-            f.write("===========================\n")
-            f.close()
+            self.say("===========================\n")
 
     def __process_image(self, base64_data, filename):
         temp_filename = filename.replace(".", "_original.")
@@ -168,4 +164,13 @@ class PhotoManager:
         cur.close()
         return photos
 
-    def say(self, message)
+    def log(self, message):
+        f = open("/tmp/photo_api.log", "a")
+        f.write(message)
+        f.close()
+    
+    def say(self, message):
+        complete_message = "[{}] {}".format(self.__class__.__name__, message)
+        print(complete_message)
+        self.log(complete_message)
+
