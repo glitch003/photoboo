@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from photo_manager import PhotoManager
 
 
