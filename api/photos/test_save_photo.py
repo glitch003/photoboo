@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from photo_manager import PhotoManager
-
+import pymysql
 
 def connect_to_mysql():
     conn = pymysql.connect(
