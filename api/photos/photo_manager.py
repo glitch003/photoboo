@@ -40,7 +40,7 @@ class PhotoManager:
             ))
             self.say("===========================\n")
 
-    def __process_image(self, base64_data, filename):
+    def __process_image(self, raw_image, filename):
         temp_filename = filename.replace(".", "_original.")
         self.__save_image_to_disk(raw_image, temp_filename)
         photo_boo = PhotoBooManager()
