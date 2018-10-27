@@ -86,7 +86,7 @@ class FaceCropper(object):
         return adjusted_image
 
     def rotate(self, image, angle_degrees=90):
-        self.say("ROTATING IMAGE BY {} degrees" + str(degrees))
+        self.say("ROTATING IMAGE BY {} degrees" + str(angle_degrees))
         # modified from:
         # https://www.pyimagesearch.com/2017/01/02/rotate-images-correctly-with-opencv-and-python/
         # grab the dimensions of the image and then determine the
