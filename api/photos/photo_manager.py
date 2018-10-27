@@ -42,6 +42,7 @@ class PhotoManager:
 
     def __process_image(self, raw_image, filename):
         temp_filename = filename.replace(".", "_original.")
+        self.say("new filename: {}".format(temp_filename))
         self.__save_image_to_disk(raw_image, temp_filename)
         photo_boo = PhotoBooManager()
         image_metadata = photo_boo.ghostify(temp_filename)
