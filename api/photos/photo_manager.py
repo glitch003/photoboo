@@ -1,6 +1,7 @@
 from pathlib import Path
 import base64
 import string
+from photoboo.PhotoBooManager import PhotoBooManager
 Path().expanduser()
 
 
@@ -32,9 +33,8 @@ class PhotoManager:
         path = self.__get_save_folder_path()
         file_path = path / filename
         try:
-            image = base64.b64decode(image_data)
             f = open(file_path.as_posix(), "wb")
-            f.write(image)
+            f.write(image_data)
             f.close()
         except:
             f = open("/tmp/photo_api.log", "w+")
@@ -43,6 +43,14 @@ class PhotoManager:
             ))
             f.write("===========================\n")
             f.close()
+
+    def __process_image(self, base64_data, filename):
+        temp_filename = filename.replace(".", "_original.")
+        self.__save_image_to_disk(raw_image, temp_filename)
+        photo_boo = PhotoBooManager()
+        image_metadata = photo_boo.ghostify(temp_filename)
+        image = image_metadata["data"]
+        return image
 
     def __clean_filename(self, name):
         # taken from:
@@ -120,7 +128,9 @@ class PhotoManager:
         cur.execute(query)
         self.sql_connection.commit()
         filename = self.__clean_filename(name)
-        self.__save_image_to_disk(data, filename)
+        image_data = base64.b64decode(data)
+        processed_image = self.__process_image(image_data, filename)
+        self.__save_image_to_disk(processed_image, filename)
         cur.close()
 
     def get_metadata_for_all_photos(self):
