@@ -28,8 +28,6 @@ def run():
 
     base64_image = base64.encodestring(image).decode("utf-8")
 
-    print("image length: {}".format(len(image)))
-
     post_data = {
         "name": "test.jpg",
         "data": base64_image

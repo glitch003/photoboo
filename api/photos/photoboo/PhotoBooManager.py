@@ -28,6 +28,7 @@ class PhotoBooManager(object):
         self.photo_boo = PhotoBooGhoster()
 
     def open_image(self, filename):
+        self.say("Opening: {}".format(filename))
         image = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
         # image = self.photo_boo.face_cropper.open_image(filename, greyscale=True)
         return image

@@ -120,7 +120,6 @@ class PhotoManager:
         filename = self.__clean_filename(name)
         raw_image = base64.b64decode(base64_image)
 
-        print("image length: {}".format(len(raw_image)))
         processed_image = self.__process_image(raw_image, filename)
         self.__save_image_to_disk(processed_image, filename)
 
