@@ -2,6 +2,7 @@
 from photo_manager import PhotoManager
 import pymysql
 from settings import settings
+import base64
 
 
 def connect_to_mysql():
