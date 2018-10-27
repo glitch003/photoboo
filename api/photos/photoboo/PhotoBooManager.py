@@ -55,7 +55,7 @@ class PhotoBooManager(object):
                 output_filepath = image_filepath
 
         finished_image = self.photo_boo.face_cropper.rotate(
-            raw_image,
+            finished_image,
             angle_degrees=-90
         )
         output["data"] = finished_image
