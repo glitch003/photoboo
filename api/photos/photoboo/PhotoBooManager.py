@@ -44,22 +44,20 @@ class PhotoBooManager(object):
         output = {}
         does_face_exist = self.photo_boo.does_face_exist(image)
 
-        output["data"] = image
+        finished_image = image
         if does_face_exist is False:
-            output["data"] = image
-            output["bytestring_data"] = cv2.imencode('.jpg', image)[1].tostring()
-            output["face_found"] = False
-            output["path"] = image_filepath
+            output_filepath = image_filepath
         else:
             try:
                 output_filepath = self.__take_photoboo_photo(image)
+                finished_image = self.open_image(output_filepath.as_posix())
             except:
                 output_filepath = image_filepath
-            image = self.open_image(output_filepath.as_posix())
-            output["data"] = image
-            output["bytestring_data"] = cv2.imencode('.jpg', image)[1].tostring()
-            output["face_found"] = True
-            output["path"] = output_filepath
+
+        output["data"] = finished_image
+        output["bytestring_data"] = cv2.imencode('.jpg', finished_image)[1].tostring()
+        output["face_found"] = does_face_exist
+        output["path"] = image_filepath
 
         # self.__upload_photo(image, Path(output["path"]).name)
         self.say("Face Found: {}".format(str(output["face_found"])))
