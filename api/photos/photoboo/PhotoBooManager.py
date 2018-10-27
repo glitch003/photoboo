@@ -54,6 +54,10 @@ class PhotoBooManager(object):
             except:
                 output_filepath = image_filepath
 
+        finished_image = self.photo_boo.face_cropper.rotate(
+            raw_image,
+            angle_degrees=-90
+        )
         output["data"] = finished_image
         output["bytestring_data"] = cv2.imencode('.jpg', finished_image)[1].tostring()
         output["face_found"] = does_face_exist
