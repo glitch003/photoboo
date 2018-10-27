@@ -35,10 +35,13 @@ class PhotoBooManager(object):
 
     def ghostify(self, image_filepath):
         raw_image = self.open_image(image_filepath)
+        raw_rotated_image = raw_image
+        '''
         raw_rotated_image = self.photo_boo.face_cropper.rotate(
             raw_image,
-            angle_degrees=90
+            angle_degrees=-90
         )
+        '''
         image = self.photo_boo.face_cropper.auto_adjust_levels(raw_rotated_image)
         output = {}
         does_face_exist = self.photo_boo.does_face_exist(image)
