@@ -62,7 +62,7 @@ class PhotoBooManager(object):
         output["data"] = finished_image
         output["bytestring_data"] = cv2.imencode('.jpg', finished_image)[1].tostring()
         output["face_found"] = does_face_exist
-        output["path"] = image_filepath
+        output["path"] = output_filepath
 
         # self.__upload_photo(image, Path(output["path"]).name)
         self.say("Face Found: {}".format(str(output["face_found"])))
