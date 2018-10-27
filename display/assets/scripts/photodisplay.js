@@ -35,7 +35,7 @@ PhotoDisplay.prototype.playLatestPhoto = function() {
 	this.getLatestPhoto();
 	setInterval(function() {
 		self.getLatestPhoto();
-	}, this.timeBetweenPhotos_s * 1000);
+	}, this.timeBetweenPhotos_s * 200);
 }
 
 PhotoDisplay.prototype.getPhotoById = function(id) {
