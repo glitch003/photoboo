@@ -22,7 +22,7 @@ def run():
     conn = connect_to_mysql()
     photo_manager = PhotoManager(conn)
 
-    with open("/var/www/20mission.org/www/tmp/photos/ghosted_1539728519.0.jpg", "rb") as f:
+    with open("/var/www/20mission.org/www/tmp/photos/original_1540676840_original.0_original.jpg", "rb") as f:
         image = f.read()
 
 
