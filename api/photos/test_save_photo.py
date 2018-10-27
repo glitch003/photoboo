@@ -24,9 +24,14 @@ def run():
     with open("/var/www/20mission.org/www/tmp/photos/adonis-moustache.jpg", "rb") as f:
         image = f.read()
 
+
+    base64_image = base64.encodestring(image).decode("utf-8")
+
+    print("image length: {}".format(len(image)))
+
     post_data = {
         "name": "test.jpg",
-        "data": image
+        "data": base64_image
     }
     photo_manager.save_new_photo(
         post_data["name"],
