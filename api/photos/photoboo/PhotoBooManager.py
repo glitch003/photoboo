@@ -58,6 +58,7 @@ class PhotoBooManager(object):
             finished_image,
             angle_degrees=-90
         )
+        self.photo_boo.save_image(finished_image, output_filepath.as_posix())
         output["data"] = finished_image
         output["bytestring_data"] = cv2.imencode('.jpg', finished_image)[1].tostring()
         output["face_found"] = does_face_exist
