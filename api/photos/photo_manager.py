@@ -49,7 +49,7 @@ class PhotoManager:
         self.__save_image_to_disk(raw_image, temp_filename)
         photo_boo = PhotoBooManager()
         image_metadata = photo_boo.ghostify(temp_filename)
-        image = image_metadata["data"]
+        image = image_metadata["bytestring_data"]
         return image
 
     def __clean_filename(self, name):
@@ -121,16 +121,20 @@ class PhotoManager:
         cur = self.sql_connection.cursor()
         cleaned_name = self.sql_connection.escape(name)
         cleaned_data = self.sql_connection.escape(data)
+
+        filename = self.__clean_filename(name)
+        image_data = base64.b64decode(data)
+        processed_image = self.__process_image(image_data, filename)
+        self.__save_image_to_disk(processed_image, filename)
+
+        base64_image = base64.encodestring(processed_image).decode("utf-8")
+        cleaned_data = self.sql_connection.escape(base64_image)
         query = "INSERT INTO `photoboo_photos` (`name`,`data`) values ({},FROM_BASE64({}));".format(
             cleaned_name,
             cleaned_data
         )
         cur.execute(query)
         self.sql_connection.commit()
-        filename = self.__clean_filename(name)
-        image_data = base64.b64decode(data)
-        processed_image = self.__process_image(image_data, filename)
-        self.__save_image_to_disk(processed_image, filename)
         cur.close()
 
     def get_metadata_for_all_photos(self):
@@ -163,3 +167,5 @@ class PhotoManager:
 
         cur.close()
         return photos
+
+    def say(self, message)

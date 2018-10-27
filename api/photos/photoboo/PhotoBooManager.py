@@ -45,6 +45,7 @@ class PhotoBooManager(object):
         output["data"] = image
         if does_face_exist is False:
             output["data"] = image
+            output["bytestring_data"] = cv2.imencode('.jpg', image)[1].tostring()
             output["face_found"] = False
             output["path"] = image_filepath
         else:
@@ -54,6 +55,7 @@ class PhotoBooManager(object):
                 output_filepath = image_filepath
             image = self.open_image(output_filepath.as_posix())
             output["data"] = image
+            output["bytestring_data"] = cv2.imencode('.jpg', image)[1].tostring()
             output["face_found"] = True
             output["path"] = output_filepath
 
