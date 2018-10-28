@@ -45,7 +45,7 @@ class PhotoBooManager(object):
         does_face_exist = self.photo_boo.does_face_exist(image)
 
         intermediate_image = image
-        output_filepath = image_filepath
+        output_filepath = Path(image_filepath)
         if does_face_exist is True:
             try:
                 output_filepath = self.__take_photoboo_photo(image)
