@@ -4,6 +4,7 @@ assert cv2.__version__[0] == '3', 'The fisheye module requires opencv version >=
 import numpy as np
 import os
 import glob
+import sys
 
 # taken from
 # https://medium.com/@kennethjiang/calibrate-fisheye-lens-using-opencv-333b05afa0b0
