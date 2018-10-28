@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import cv2
 assert cv2.__version__[0] == '3', 'The fisheye module requires opencv version >= 3.0.0'
 import numpy as np
@@ -19,7 +19,7 @@ _img_shape = None
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
-images = glob.glob('/tmp/images/test_*.jpg')
+images = glob.glob('/tmp/images/checker*.jpg')
 
 for fname in images:
     img = cv2.imread(fname)
