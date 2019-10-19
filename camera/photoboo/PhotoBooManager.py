@@ -5,6 +5,7 @@ import base64
 from .PhotoBooGhoster import PhotoBooGhoster
 from datetime import datetime
 import requests
+import traceback
 import cv2
 import time
 try:
@@ -70,10 +71,11 @@ class PhotoBooManager(object):
         raw_image = self.open_image(image_filepath)
         raw_rotated_image = self.photo_boo.face_cropper.rotate(
             raw_image,
-            angle_degrees=90
+            angle_degrees=0
         )
         image = self.photo_boo.face_cropper.auto_adjust_levels(raw_rotated_image)
         output = {}
+        print("checking if face exists")
         does_face_exist = self.photo_boo.does_face_exist(image)
 
         output["data"] = image
@@ -84,17 +86,20 @@ class PhotoBooManager(object):
         else:
             try:
                 output_filepath = self.__take_photoboo_photo(image)
-            except:
+            except Exception as ex:
+                print(traceback.format_exc())
                 output_filepath = image_filepath
-            image = self.open_image(output_filepath.as_posix())
+            image = self.open_image(Path(output_filepath).as_posix())
             output["data"] = image
             output["face_found"] = True
             output["path"] = output_filepath
 
         # rotate image 90 degrees
-        self.__upload_photo(image, Path(output["path"]).name)
+        #self.__upload_photo(image, Path(output["path"]).name)
+        print("Photo exists at ")
+        print(Path(output["path"]).name)
 
-        base64_data = base64.encodestring(output["data"])
+        # base64_data = base64.encodestring(output["data"])
         # self.say(base64_data)
         self.say("Face Found: {}".format(str(output["face_found"])))
         self.say("Path: {}".format(output["path"]))

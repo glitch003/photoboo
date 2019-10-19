@@ -2,6 +2,7 @@ from .FaceCropper import FaceCropper
 import cv2
 import numpy as np
 from collections import OrderedDict
+import traceback
 
 
 class PhotoBooGhoster(object):
@@ -21,7 +22,9 @@ class PhotoBooGhoster(object):
         try:
             self.face_cropper.get_face_bounding_box(image)
             return True
-        except:
+        except Exception as ex:
+            print(repr(ex))
+            print(traceback.format_exc())
             return False
 
     def ghost_face(self, image):
@@ -140,7 +143,7 @@ class PhotoBooGhoster(object):
         else:
             width, height, channels = image.shape
 
-        percent_blur = 5.0
+        percent_blur = 2
         size = int(width * (percent_blur / 100.0))
 
         kernel_motion_blur = np.zeros((size, size))

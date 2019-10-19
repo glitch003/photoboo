@@ -92,22 +92,22 @@ class FaceCropper(object):
         # center
         height, width = image.shape[:2]
         center_x, center_y = (width // 2, height // 2)
-     
+
         # grab the rotation matrix (applying the negative of the
         # angle to rotate clockwise), then grab the sine and cosine
         # (i.e., the rotation components of the matrix)
         M = cv2.getRotationMatrix2D((center_x, center_y), -angle_degrees, 1.0)
         cos = np.abs(M[0, 0])
         sin = np.abs(M[0, 1])
-     
+
         # compute the new bounding dimensions of the image
         new_width = int((height * sin) + (width * cos))
         new_height = int((height * cos) + (width * sin))
-     
+
         # adjust the rotation matrix to take into account translation
         M[0, 2] += (new_width / 2) - center_x
         M[1, 2] += (new_height / 2) - center_y
-     
+
         # perform the actual rotation and return the image
         return cv2.warpAffine(image, M, (new_width, new_height))
 
@@ -130,9 +130,9 @@ class FaceCropper(object):
         faces_bounding_box = face_cascade.detectMultiScale(
             gray_image,
             scaleFactor=1.05,
-            minNeighbors=5,
+            # minNeighbors=5,
             minSize=(100, 100),
-            flags=cv2.CASCADE_SCALE_IMAGE
+            # flags=cv2.CASCADE_SCALE_IMAGE
         )[0]
         self.say("done")
         return faces_bounding_box
