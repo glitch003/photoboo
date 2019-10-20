@@ -20,32 +20,54 @@ class PhotoBooGhoster(object):
 
     def does_face_exist(self, image):
         try:
-            self.face_cropper.get_face_bounding_box(image)
+            self.face_cropper.get_face_bounding_boxes(image)
             return True
         except Exception as ex:
             print(repr(ex))
             print(traceback.format_exc())
             return False
 
-    def ghost_face(self, image):
-        face_landmarks = self.get_face_landmarks(image)
-        face_shape = self.get_face_shape(image, face_landmarks)
-        ghost_face = self.fill_in_mouth_and_eyes(image, face_landmarks)
-        blurred_background = self.horizontal_blur(image)
+    def ghost_faces(self, image):
+        face_bounding_boxes = self.face_cropper.get_face_bounding_boxes(image)
+
+        background_image = self.horizontal_blur(image)
+
+        ghost_faces = []
+        face_shapes = []
+
+        i = 0
+        for face_bounding_box in face_bounding_boxes:
+            print("getting face stuff for index ")
+            print(i)
+            i += 1
+            face_landmarks = self.face_cropper.get_face_landmarks(
+                image,
+                face_bounding_box
+            )
+            # sometimes the face shape detector fails.  lets just skip those faces.
+            try:
+                face_shape = self.get_face_shape(image, face_landmarks)
+            except Exception as ex:
+                print("Exception captured and handled...")
+                print(traceback.format_exc())
+                print("-------------------")
+                continue
+            print("after exception, processing index ")
+            print(i)
+            ghost_face = self.fill_in_mouth_and_eyes(image, face_landmarks)
+
+            face_shapes.append(face_shape)
+            ghost_faces.append(ghost_face)
+
+        print("merging images")
         merged_image = self.merge_images(
-            ghost_face,
-            blurred_background,
-            face_shape
+            ghost_faces,
+            background_image,
+            face_shapes
         )
+
         return merged_image
 
-    def get_face_landmarks(self, image):
-        face_bounding_box = self.face_cropper.get_face_bounding_box(image)
-        landmarks = self.face_cropper.get_face_landmarks(
-            image,
-            face_bounding_box
-        )
-        return landmarks
 
     def fill_in_mouth_and_eyes(self, image, face_landmarks, alpha=1.0):
         # modified from:
@@ -154,34 +176,61 @@ class PhotoBooGhoster(object):
         output = cv2.filter2D(image, -1, kernel_motion_blur)
         return output
 
-    def merge_images(self, face_image, background_image, face_shape):
-        face_shape_points = face_shape["points"]
-        min_x, min_y, max_x, max_y = face_shape["bounds"]
-        pts = np.array(face_shape_points).astype(np.int)
-        mask = 0 * np.ones(background_image.shape, background_image.dtype)
-        cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
+    def merge_images(self, face_images, background_image, face_shapes):
+        merged_image = cv2.cvtColor(
+                    background_image,
+                    cv2.COLOR_GRAY2RGB
+                )
+        i = 0
 
-        if len(face_image.shape) == 2:
-            width, height = face_image.shape
-            face_image = cv2.cvtColor(face_image, cv2.COLOR_GRAY2RGB)
-            background_image = cv2.cvtColor(
-                background_image,
-                cv2.COLOR_GRAY2RGB
+        print("face images has this many items")
+        print(len(face_images))
+        print("face shapes has this many items")
+        print(len(face_shapes))
+
+        for face_image in face_images:
+            print("****processing face images with index")
+            print(i)
+
+            face_shape = face_shapes[i]
+
+
+            face_shape_points = face_shape["points"]
+            min_x, min_y, max_x, max_y = face_shape["bounds"]
+            pts = np.array(face_shape_points).astype(np.int)
+            mask = 0 * np.ones(merged_image.shape, merged_image.dtype)
+            cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
+
+            print("checking len of face_image.shape")
+            print(len(face_image.shape))
+            print("checking len of merged_image.shape")
+            print(merged_image.shape)
+            if len(face_image.shape) == 2:
+                width, height = face_image.shape
+                face_image = cv2.cvtColor(face_image, cv2.COLOR_GRAY2RGB)
+                # merged_image = cv2.cvtColor(
+                #     merged_image,
+                #     cv2.COLOR_GRAY2RGB
+                # )
+
+            else:
+                width, height, channels = face_image.shape
+            center = (
+                int(round(min_x + (max_x - min_x)/2)),
+                int(round(min_y + (max_y - min_y)/2))
             )
-        else:
-            width, height, channels = face_image.shape
-        center = (
-            int(round(min_x + (max_x - min_x)/2)),
-            int(round(min_y + (max_y - min_y)/2))
-        )
-        # print(mask.tolist())
-        merged_image = cv2.seamlessClone(
-            face_image,
-            background_image,
-            mask,
-            center,
-            cv2.MIXED_CLONE
-        )
+
+            print("seamless cloning")
+            # print(mask.tolist())
+            merged_image = cv2.seamlessClone(
+                face_image,
+                merged_image,
+                mask,
+                center,
+                cv2.MIXED_CLONE
+            )
+
+            i += 1
         return merged_image
 
     def save_image(self, image, filename):

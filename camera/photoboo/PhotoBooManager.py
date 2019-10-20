@@ -117,7 +117,7 @@ class PhotoBooManager(object):
         return time.mktime(date.timetuple())
 
     def __take_photoboo_photo(self, image):
-        ghosted_face = self.photo_boo.ghost_face(image)
+        ghosted_face = self.photo_boo.ghost_faces(image)
         tmp_image_filename = self.images_folder / Path(
             "ghosted_{}.jpg".format(
                 round(self.to_seconds(datetime.now()))

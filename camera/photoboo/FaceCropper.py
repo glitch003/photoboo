@@ -111,7 +111,7 @@ class FaceCropper(object):
         # perform the actual rotation and return the image
         return cv2.warpAffine(image, M, (new_width, new_height))
 
-    def get_face_bounding_box(self, image):
+    def get_face_bounding_boxes(self, image):
         face_data_path = self.__get_real_path() / self.face_data_filename
         self.say("Finding bounding box for face in image... ", "")
         if os.path.isfile(face_data_path.as_posix()) is False or \
@@ -127,15 +127,17 @@ class FaceCropper(object):
             gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         except:
             gray_image = image
-        faces_bounding_box = face_cascade.detectMultiScale(
+        faces_bounding_boxes = face_cascade.detectMultiScale(
             gray_image,
             scaleFactor=1.05,
             # minNeighbors=5,
             minSize=(100, 100),
             # flags=cv2.CASCADE_SCALE_IMAGE
-        )[0]
+        )
+        self.say("found this many faces:")
+        self.say(len(faces_bounding_boxes))
         self.say("done")
-        return faces_bounding_box
+        return faces_bounding_boxes
 
     def get_face_landmarks(self, image, face_bounds=None):
         self.say("Finding face landmarks... ", "")
