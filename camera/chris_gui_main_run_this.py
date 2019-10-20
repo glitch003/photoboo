@@ -49,7 +49,6 @@ def advance_state():
         app_state = 1
     else:
         camera.remove_overlay(main_overlay)
-        camera.annotate_text = 'Ready'
         app_state = 0
 
 
@@ -58,13 +57,9 @@ def take_photo_and_process_image():
 
     photo_boo = PhotoBooManager()
 
-    camera.annotate_text = ''
-
     image_filepath = photo_boo.take_photo(camera)
 
     main_overlay = add_image_overlay(image_filepath)
-
-    camera.annotate_text = 'Processing...'
 
     image = photo_boo.ghostify(image_filepath)
 
@@ -121,7 +116,6 @@ def on_release(key):
 def main():
 
     camera.start_preview()
-    camera.annotate_text = 'Ready'
 
     # Collect events until released
     with keyboard.Listener(
