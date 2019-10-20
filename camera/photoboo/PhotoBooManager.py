@@ -22,14 +22,13 @@ except (ImportError, AttributeError):
 class PhotoBooManager(object):
     camera = None
     photo_boo = None
-    images_folder = Path('/tmp/images') # Path("photoboo/images")
+    images_folder = Path('/home/pi/PhotoData')
     background_filename = Path("background.jpg")
 
     def __init__(self):
         self.photo_boo = PhotoBooGhoster()
 
-    def take_photo(self):
-        camera = PiCamera()
+    def take_photo(self, camera):
         script_folder = self.__get_script_folder()
         images_folder = script_folder / self.images_folder
         tmp_image_filename = "original_{}.jpg".format(
@@ -44,23 +43,26 @@ class PhotoBooManager(object):
             ))
             raise SystemExit
 
-        camera.resolution = (800, 600)
-        camera.shutter_speed = 50000
-        camera.exposure_compensation = 25
-        camera.exposure_mode = "night"
-        camera.awb_mode = "off"
-        time.sleep(2)
+        # camera.resolution = (800, 600)
+        # camera.shutter_speed = 50000
+        # camera.exposure_compensation = 25
+        # camera.exposure_mode = "night"
+        # camera.awb_mode = "off"
+        # time.sleep(2)
         camera.capture(tmp_image_filepath.as_posix())
-        camera.close()
+        # camera.close()
 
         image = self.open_image(tmp_image_filepath.as_posix())
-        # remove fisheye distortion
-        undistorted_image = self.photo_boo.face_cropper.undo_fisheye(image)
-        self.photo_boo.save_image(
-            undistorted_image,
-            tmp_image_filepath.as_posix()
-        )
+
         return tmp_image_filepath.as_posix()
+
+        # remove fisheye distortion
+        # undistorted_image = self.photo_boo.face_cropper.undo_fisheye(image)
+        # self.photo_boo.save_image(
+        #     undistorted_image,
+        #     tmp_image_filepath.as_posix()
+        # )
+        # return tmp_image_filepath.as_posix()
 
     def open_image(self, filename):
         image = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
@@ -69,11 +71,11 @@ class PhotoBooManager(object):
 
     def ghostify(self, image_filepath):
         raw_image = self.open_image(image_filepath)
-        raw_rotated_image = self.photo_boo.face_cropper.rotate(
-            raw_image,
-            angle_degrees=0
-        )
-        image = self.photo_boo.face_cropper.auto_adjust_levels(raw_rotated_image)
+        # raw_rotated_image = self.photo_boo.face_cropper.rotate(
+        #     raw_image,
+        #     angle_degrees=0
+        # )
+        image = self.photo_boo.face_cropper.auto_adjust_levels(raw_image)
         output = {}
         print("checking if face exists")
         does_face_exist = self.photo_boo.does_face_exist(image)
