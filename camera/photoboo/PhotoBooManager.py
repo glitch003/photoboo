@@ -22,17 +22,17 @@ except (ImportError, AttributeError):
 class PhotoBooManager(object):
     camera = None
     photo_boo = None
-    images_folder = Path('/home/pi/PhotoData')
+    images_folder = Path('/Users/chris/PhotoData')
     background_filename = Path("background.jpg")
 
     def __init__(self):
         self.photo_boo = PhotoBooGhoster()
 
-    def take_photo(self, camera):
+    def take_photo(self, camera, timestamp):
         script_folder = self.__get_script_folder()
         images_folder = script_folder / self.images_folder
         tmp_image_filename = "original_{}.jpg".format(
-            round(time.time())
+            timestamp
         )
         tmp_image_filepath = images_folder / Path(tmp_image_filename)
         try:
@@ -43,7 +43,7 @@ class PhotoBooManager(object):
             ))
             raise SystemExit
 
-        camera.resolution = (960, 540)
+        # camera.resolution = (960, 540)
         # camera.shutter_speed = 50000
         # camera.exposure_compensation = 25
         # camera.exposure_mode = "night"
@@ -69,25 +69,26 @@ class PhotoBooManager(object):
         # image = self.photo_boo.face_cropper.open_image(filename, greyscale=True)
         return image
 
-    def ghostify(self, image_filepath):
+    def ghostify(self, image_filepath, timestamp):
         raw_image = self.open_image(image_filepath)
+        print("opened image. image dimensions are {}".format((raw_image.shape[0],raw_image.shape[1])))
         # raw_rotated_image = self.photo_boo.face_cropper.rotate(
         #     raw_image,
         #     angle_degrees=0
         # )
         image = self.photo_boo.face_cropper.auto_adjust_levels(raw_image)
         output = {}
-        print("checking if face exists")
-        does_face_exist = self.photo_boo.does_face_exist(image)
+        print("checking if face exists.  image dimensions are {}".format((image.shape[0],image.shape[1])))
+        possible_face_bounding_boxes = self.photo_boo.does_face_exist(image)
 
         output["data"] = image
-        if does_face_exist is False:
+        if possible_face_bounding_boxes is False:
             output["data"] = image
             output["face_found"] = False
             output["path"] = image_filepath
         else:
             try:
-                output_filepath = self.__take_photoboo_photo(image)
+                output_filepath = self.__take_photoboo_photo(image, timestamp, possible_face_bounding_boxes)
             except Exception as ex:
                 print(traceback.format_exc())
                 output_filepath = image_filepath
@@ -118,21 +119,14 @@ class PhotoBooManager(object):
     def to_seconds(self, date):
         return time.mktime(date.timetuple())
 
-    def __take_photoboo_photo(self, image):
-        ghosted_face = self.photo_boo.ghost_faces(image)
-        tmp_image_filename = self.images_folder / Path(
-            "ghosted_{}.jpg".format(
-                round(self.to_seconds(datetime.now()))
-            )
+    def __take_photoboo_photo(self, image, timestamp, possible_face_bounding_boxes):
+        ghosted_face = self.photo_boo.ghost_faces(image, possible_face_bounding_boxes)
+        output_filename = self.images_folder / Path(
+            "ghosted_{}.jpg".format(timestamp)
         )
-        output_filename = Path(tmp_image_filename.as_posix().replace(
-            "original",
-            "ghosted"
-        ))
-        output_filepath = Path(output_filename)
-        self.photo_boo.save_image(ghosted_face, output_filepath.as_posix())
+        self.photo_boo.save_image(ghosted_face, output_filename.as_posix())
 
-        return output_filepath
+        return output_filename
 
     def __upload_photo(self, image, filename):
         api_url = "https://20mission.org/photoboo/api/photos/"

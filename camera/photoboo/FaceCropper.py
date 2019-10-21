@@ -130,7 +130,7 @@ class FaceCropper(object):
         faces_bounding_boxes = face_cascade.detectMultiScale(
             gray_image,
             scaleFactor=1.05,
-            # minNeighbors=5,
+            minNeighbors=5,
             minSize=(100, 100),
             # flags=cv2.CASCADE_SCALE_IMAGE
         )
@@ -194,11 +194,21 @@ class FaceCropper(object):
         return True
 
     def get_deluanay_triangles_from_landmarks(self, landmarks, bounds):
-        self.say("Getting Deluanay triangles from landmarks... ", "")
+        self.say("Getting Deluanay triangles from {} landmarks with bounds {} ".format(len(landmarks), bounds), "")
         subdiv2d = cv2.Subdiv2D(bounds)
+
+        inserted_anything = False
         for landmark in landmarks:
             x, y = landmark
-            subdiv2d.insert((x, y))
+            # self.say("inserting {}".format((x, y)))
+            if x < bounds[2] and y < bounds[3]:
+                inserted_anything = True
+                subdiv2d.insert((x, y))
+
+        print("Inserted anything? {}".format(inserted_anything))
+        # bail early if we didn't find any landmarks in bounds
+        if inserted_anything == False:
+            return False
 
         triangles = subdiv2d.getTriangleList()
 

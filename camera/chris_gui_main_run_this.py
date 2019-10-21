@@ -57,11 +57,12 @@ def take_photo_and_process_image():
 
     photo_boo = PhotoBooManager()
 
-    image_filepath = photo_boo.take_photo(camera)
+    timestamp = round(time.time())
+    image_filepath = photo_boo.take_photo(camera, timestamp)
 
     main_overlay = add_image_overlay(image_filepath)
 
-    image = photo_boo.ghostify(image_filepath)
+    image = photo_boo.ghostify(image_filepath, timestamp)
 
     camera.remove_overlay(main_overlay)
 

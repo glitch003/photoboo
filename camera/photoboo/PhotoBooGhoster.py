@@ -8,6 +8,7 @@ import traceback
 class PhotoBooGhoster(object):
     face_cropper = None
 
+
     def __init__(self):
         self.face_cropper = FaceCropper(in_verbose_mode = True)
 
@@ -20,16 +21,15 @@ class PhotoBooGhoster(object):
 
     def does_face_exist(self, image):
         try:
-            self.face_cropper.get_face_bounding_boxes(image)
-            return True
+            face_bounding_boxes = self.face_cropper.get_face_bounding_boxes(image)
+            return face_bounding_boxes
         except Exception as ex:
             print(repr(ex))
             print(traceback.format_exc())
             return False
 
-    def ghost_faces(self, image):
-        face_bounding_boxes = self.face_cropper.get_face_bounding_boxes(image)
-
+    def ghost_faces(self, image, face_bounding_boxes):
+        print("blurring image...")
         background_image = self.horizontal_blur(image)
 
         ghost_faces = []
@@ -37,23 +37,27 @@ class PhotoBooGhoster(object):
 
         i = 0
         for face_bounding_box in face_bounding_boxes:
-            print("getting face stuff for index ")
-            print(i)
+            print("getting face stuff for index {}. face bounding box is {}".format(i, face_bounding_box))
             i += 1
             face_landmarks = self.face_cropper.get_face_landmarks(
                 image,
                 face_bounding_box
             )
+            print("face landmarks are {}.  getting face shape".format(face_landmarks))
             # sometimes the face shape detector fails.  lets just skip those faces.
             try:
                 face_shape = self.get_face_shape(image, face_landmarks)
+                # this can happen if we didn't get good triangles.  skip it.
+                if face_shape == False:
+                    continue
             except Exception as ex:
                 print("Exception captured and handled...")
                 print(traceback.format_exc())
                 print("-------------------")
                 continue
-            print("after exception, processing index ")
-            print(i)
+            # print("after exception, processing index ")
+            # print(i)
+            print("fill in mouth and eyes")
             ghost_face = self.fill_in_mouth_and_eyes(image, face_landmarks)
 
             face_shapes.append(face_shape)
@@ -99,27 +103,32 @@ class PhotoBooGhoster(object):
         return output
 
     def get_face_shape(self, image, landmarks):
-        min_x = 999999
-        min_y = 999999
-        max_x = 0
-        max_y = 0
-        for landmark in landmarks:
-            x, y = landmark
-            min_x = min(x, min_x)
-            min_y = min(y, min_y)
-            max_x = max(x, max_x)
-            max_y = max(y, max_y)
+        # min_x = 999999
+        # min_y = 999999
+        # max_x = 0
+        # max_y = 0
+        # for landmark in landmarks:
+        #     x, y = landmark
+        #     min_x = min(x, min_x)
+        #     min_y = min(y, min_y)
+        #     max_x = max(x, max_x)
+        #     max_y = max(y, max_y)
 
         if len(image.shape) == 2:
-            width, height = image.shape
+            height, width = image.shape
         else:
-            width. height, channels = image.shape
+            height, width, channels = image.shape
 
         image_bounds = (0, 0, width, height)
         triangles = self.face_cropper.get_deluanay_triangles_from_landmarks(
             landmarks,
             image_bounds
         )
+
+        # bail early if we didn't get any triangles
+        if triangles == False:
+            return False
+
         for triangle in triangles:
             point1, point2, point3 = triangle
         deluanay_points = self.face_cropper.get_raw_points_from_deluanay_triangles(
@@ -161,9 +170,9 @@ class PhotoBooGhoster(object):
         # https://www.packtpub.com/mapt/book/application_development/9781785283932/2/ch02lvl1sec21/motion-blur
         # generating the kernel
         if len(image.shape) == 2:
-            width, height = image.shape
+            height, width = image.shape
         else:
-            width, height, channels = image.shape
+            height, width, channels = image.shape
 
         percent_blur = 5
         size = int(width * (percent_blur / 100.0))
