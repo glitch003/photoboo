@@ -8,9 +8,8 @@ import traceback
 class PhotoBooGhoster(object):
     face_cropper = None
 
-
-    def __init__(self):
-        self.face_cropper = FaceCropper(in_verbose_mode = True)
+    def __init__(self, preloaded_predictor):
+        self.face_cropper = FaceCropper(preloaded_predictor, in_verbose_mode = True)
 
     def load_photo(self, filename):
         image = self.face_cropper.open_image(filename, greyscale=True)

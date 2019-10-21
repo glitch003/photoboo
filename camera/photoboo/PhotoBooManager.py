@@ -8,6 +8,7 @@ import requests
 import traceback
 import cv2
 import time
+import dlib
 try:
     from pathlib import Path
 except (ImportError, AttributeError):
@@ -22,11 +23,29 @@ except (ImportError, AttributeError):
 class PhotoBooManager(object):
     camera = None
     photo_boo = None
-    images_folder = Path('/Users/chris/PhotoData')
-    background_filename = Path("background.jpg")
+    # images_folder = Path('/Users/chris/PhotoData')
+    images_folder = Path('/home/pi/PhotoData')
+
+    face_data_filename = "haarcascades/haarcascade_frontalface_default.xml"
+    predictor_path = "shape_predictor_68_face_landmarks.dat"
 
     def __init__(self):
-        self.photo_boo = PhotoBooGhoster()
+        print("loading predictor")
+        predictor_path = self.__get_real_path() / self.predictor_path
+        if os.path.isfile(predictor_path.as_posix()) is False or \
+                os.access(predictor_path.as_posix(), os.R_OK) is False:
+            raise Exception(
+                """haarscade file, '{}' is not accessible.
+                Download from opencv""".format(
+                    self.predictor_path.as_posix()
+                )
+            )
+        predictor = dlib.shape_predictor(predictor_path.as_posix())
+        print("predictor loaded")
+
+        self.photo_boo = PhotoBooGhoster(predictor)
+
+
 
     def take_photo(self, camera, timestamp):
         script_folder = self.__get_script_folder()
@@ -71,14 +90,14 @@ class PhotoBooManager(object):
 
     def ghostify(self, image_filepath, timestamp):
         raw_image = self.open_image(image_filepath)
-        print("opened image. image dimensions are {}".format((raw_image.shape[0],raw_image.shape[1])))
+        # print("opened image. image dimensions are {}".format((raw_image.shape[0],raw_image.shape[1])))
         # raw_rotated_image = self.photo_boo.face_cropper.rotate(
         #     raw_image,
         #     angle_degrees=0
         # )
         image = self.photo_boo.face_cropper.auto_adjust_levels(raw_image)
         output = {}
-        print("checking if face exists.  image dimensions are {}".format((image.shape[0],image.shape[1])))
+        print("checking if face exists")
         possible_face_bounding_boxes = self.photo_boo.does_face_exist(image)
 
         output["data"] = image
@@ -127,6 +146,12 @@ class PhotoBooManager(object):
         self.photo_boo.save_image(ghosted_face, output_filename.as_posix())
 
         return output_filename
+
+    def __get_real_path(self):
+        real_path = Path(
+            os.path.dirname(os.path.realpath(__file__))
+        )
+        return real_path
 
     def __upload_photo(self, image, filename):
         api_url = "https://20mission.org/photoboo/api/photos/"

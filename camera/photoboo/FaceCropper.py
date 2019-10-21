@@ -21,9 +21,12 @@ class FaceCropper(object):
     predictor_path = "shape_predictor_68_face_landmarks.dat"
     color_white = (255, 255, 255)
 
-    def __init__(self, in_verbose_mode=False):
+    predictor = None
+
+    def __init__(self, preloaded_predictor, in_verbose_mode=False):
         self.in_verbose_mode = in_verbose_mode
         self.say("In verbose mode")
+        self.predictor = preloaded_predictor
 
     def __get_real_path(self):
         real_path = Path(
@@ -140,22 +143,13 @@ class FaceCropper(object):
         return faces_bounding_boxes
 
     def get_face_landmarks(self, image, face_bounds=None):
-        self.say("Finding face landmarks... ", "")
-        predictor_path = self.__get_real_path() / self.predictor_path
-        if os.path.isfile(predictor_path.as_posix()) is False or \
-                os.access(predictor_path.as_posix(), os.R_OK) is False:
-            raise Exception(
-                """haarscade file, '{}' is not accessible.
-                Download from opencv""".format(
-                    self.predictor_path.as_posix()
-                )
-            )
-        predictor = dlib.shape_predictor(predictor_path.as_posix())
+        print("Finding face landmarks... ")
+
         if face_bounds is None:
             x = 0
             y = 0
-            width = image.shape[0]
-            height = image.shape[1]
+            width = image.shape[1]
+            height = image.shape[0]
         else:
             x = face_bounds[0]
             y = face_bounds[1]
@@ -167,7 +161,7 @@ class FaceCropper(object):
             int(x + width),
             int(y + height)
         )
-        detected_landmarks = predictor(image, dlib_rect).parts()
+        detected_landmarks = self.predictor(image, dlib_rect).parts()
         landmarks = [
             (landmark.x, landmark.y) for landmark in detected_landmarks
         ]
