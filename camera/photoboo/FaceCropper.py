@@ -19,6 +19,7 @@ class FaceCropper(object):
 
     face_data_filename = "haarcascades/haarcascade_frontalface_default.xml"
     predictor_path = "shape_predictor_68_face_landmarks.dat"
+
     color_white = (255, 255, 255)
 
     predictor = None
@@ -125,7 +126,9 @@ class FaceCropper(object):
                     face_data_path
                 )
             )
+        print("loading classifier")
         face_cascade = cv2.CascadeClassifier(face_data_path.as_posix())
+        print("classifier loaded")
         try:
             gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         except:

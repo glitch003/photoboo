@@ -42,7 +42,7 @@ class PhotoBooGhoster(object):
                 image,
                 face_bounding_box
             )
-            print("face landmarks are {}.  getting face shape".format(face_landmarks))
+            # print("face landmarks are {}.  getting face shape".format(face_landmarks))
             # sometimes the face shape detector fails.  lets just skip those faces.
             try:
                 face_shape = self.get_face_shape(image, face_landmarks)
@@ -191,10 +191,10 @@ class PhotoBooGhoster(object):
                 )
         i = 0
 
-        print("face images has this many items")
-        print(len(face_images))
-        print("face shapes has this many items")
-        print(len(face_shapes))
+        # print("face images has this many items")
+        # print(len(face_images))
+        # print("face shapes has this many items")
+        # print(len(face_shapes))
 
         for face_image in face_images:
             print("****processing face images with index")
@@ -209,12 +209,12 @@ class PhotoBooGhoster(object):
             mask = 0 * np.ones(merged_image.shape, merged_image.dtype)
             cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
 
-            print("checking len of face_image.shape")
-            print(len(face_image.shape))
-            print("checking len of merged_image.shape")
-            print(merged_image.shape)
+            # print("checking len of face_image.shape")
+            # print(len(face_image.shape))
+            # print("checking len of merged_image.shape")
+            # print(merged_image.shape)
             if len(face_image.shape) == 2:
-                width, height = face_image.shape
+                height, width = face_image.shape
                 face_image = cv2.cvtColor(face_image, cv2.COLOR_GRAY2RGB)
                 # merged_image = cv2.cvtColor(
                 #     merged_image,
@@ -222,7 +222,7 @@ class PhotoBooGhoster(object):
                 # )
 
             else:
-                width, height, channels = face_image.shape
+                height, width, channels = face_image.shape
             center = (
                 int(round(min_x + (max_x - min_x)/2)),
                 int(round(min_y + (max_y - min_y)/2))
