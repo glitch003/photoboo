@@ -43,7 +43,7 @@ class PhotoBooManager(object):
             ))
             raise SystemExit
 
-        # camera.resolution = (800, 600)
+        camera.resolution = (960, 540)
         # camera.shutter_speed = 50000
         # camera.exposure_compensation = 25
         # camera.exposure_mode = "night"
