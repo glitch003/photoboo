@@ -7,11 +7,13 @@ from picamera import PiCamera
 import time
 from pynput import keyboard
 from PIL import Image
+import threading
 
 button_pin_id = 11
 button_mode = GPIO.PUD_UP
 # state 0 means waiting to take pic
-# state 1 means pic taken, and they are looking at the result
+# state 1 means processing
+# state 2 means pic taken, and they are looking at the result
 app_state = 0
 
 camera = PiCamera(sensor_mode=2)
@@ -43,33 +45,48 @@ def setup_gpio_for_button(pin_id, button_mode):
 
 def advance_state():
     global app_state
+    print("advancing state.  current state is {}".format(app_state))
     if app_state == 0:
-        print("processing...")
-        take_photo_and_process_image()
         app_state = 1
-    else:
+        print_timestamp("button pressed")
+        threading.Thread(target=take_photo_and_process_image).start()
+        # take_photo_and_process_image()
+    elif app_state == 2:
+        print_timestamp("remove ghost overlay")
         camera.remove_overlay(main_overlay)
         app_state = 0
 
+def print_timestamp(msg):
+    print("[{}]: {}".format(round(time.time()), msg))
 
 def take_photo_and_process_image():
     global main_overlay
-
-    photo_boo = PhotoBooManager()
+    global app_state
 
     timestamp = round(time.time())
+
+    print_timestamp("snapping photo")
+
     image_filepath = photo_boo.take_photo(camera, timestamp)
 
+    print_timestamp("add snap overlay")
     main_overlay = add_image_overlay(image_filepath)
 
+    print_timestamp("ghostifying photo")
     image = photo_boo.ghostify(image_filepath, timestamp)
 
+    print_timestamp("remove snapped overlay")
     camera.remove_overlay(main_overlay)
 
     # now show result
     print(image)
 
+    print_timestamp("add ghost overlay")
     main_overlay = add_image_overlay(image['path'])
+
+    # done processing
+    print_timestamp("setting app state to 2")
+    app_state = 2
 
 def add_image_overlay(image_filepath):
     # Load the arbitrarily sized image
@@ -100,6 +117,7 @@ def on_press(key):
     try:
         print('alphanumeric key {0} pressed'.format(
             key.char))
+        advance_state()
     except AttributeError:
         print('special key {0} pressed'.format(
             key))
@@ -107,7 +125,6 @@ def on_press(key):
 def on_release(key):
     print('{0} released'.format(
         key))
-    advance_state()
     if key == keyboard.Key.esc:
         # Stop listener
         return False
