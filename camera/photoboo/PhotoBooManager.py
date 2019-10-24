@@ -67,7 +67,6 @@ class PhotoBooManager(object):
 
         # camera.close()
         # image = self.open_image(tmp_image_filepath.as_posix())
-
         # capture to ram
         rawCapture = PiRGBArray(camera, size=(1920,1080))
         camera.capture(rawCapture, format="rgb", resize=(1920,1080))
