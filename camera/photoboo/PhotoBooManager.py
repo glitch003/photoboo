@@ -9,6 +9,8 @@ import traceback
 import cv2
 import time
 import dlib
+from picamera.array import PiRGBArray
+
 try:
     from pathlib import Path
 except (ImportError, AttributeError):
@@ -22,7 +24,7 @@ except (ImportError, AttributeError):
 
 class PhotoBooManager(object):
     camera = None
-    photo_boo = None
+    photo_boo_ghoster = None
     # images_folder = Path('/Users/chris/PhotoData')
     images_folder = Path('/home/pi/PhotoData')
 
@@ -43,11 +45,44 @@ class PhotoBooManager(object):
         predictor = dlib.shape_predictor(predictor_path.as_posix())
         print("predictor loaded")
 
-        self.photo_boo = PhotoBooGhoster(predictor)
+        self.photo_boo_ghoster = PhotoBooGhoster(predictor)
 
 
 
     def take_photo(self, camera, timestamp):
+
+
+        # camera.resolution = (960, 540)
+        # camera.shutter_speed = 50000
+        # camera.exposure_compensation = 25
+        # camera.exposure_mode = "night"
+        # camera.awb_mode = "off"
+        # time.sleep(2)
+
+        # camera.capture(tmp_image_filepath.as_posix())
+
+        # camera.close()
+        # image = self.open_image(tmp_image_filepath.as_posix())
+
+        # capture to ram
+        rawCapture = PiRGBArray(camera)
+        camera.capture(rawCapture, format="rgb")
+        image = rawCapture.array
+
+        # save image on bg thread
+        self.save_image(image, timestamp)
+
+        return image
+
+        # remove fisheye distortion
+        # undistorted_image = self.photo_boo_ghoster.face_cropper.undo_fisheye(image)
+        # self.photo_boo_ghoster.save_image(
+        #     undistorted_image,
+        #     tmp_image_filepath.as_posix()
+        # )
+        # return tmp_image_filepath.as_posix()
+
+    def save_image(self, image, timestamp):
         script_folder = self.__get_script_folder()
         images_folder = script_folder / self.images_folder
         tmp_image_filename = "original_{}.jpg".format(
@@ -62,70 +97,59 @@ class PhotoBooManager(object):
             ))
             raise SystemExit
 
-        # camera.resolution = (960, 540)
-        # camera.shutter_speed = 50000
-        # camera.exposure_compensation = 25
-        # camera.exposure_mode = "night"
-        # camera.awb_mode = "off"
-        # time.sleep(2)
-        camera.capture(tmp_image_filepath.as_posix())
-        # camera.close()
-
-        image = self.open_image(tmp_image_filepath.as_posix())
-
-        return tmp_image_filepath.as_posix()
-
-        # remove fisheye distortion
-        # undistorted_image = self.photo_boo.face_cropper.undo_fisheye(image)
-        # self.photo_boo.save_image(
-        #     undistorted_image,
-        #     tmp_image_filepath.as_posix()
-        # )
-        # return tmp_image_filepath.as_posix()
+        print("saving image to {}".format(tmp_image_filepath.as_posix()))
+        cv2.imwrite(tmp_image_filepath.as_posix(), image)
 
     def open_image(self, filename):
         image = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
-        # image = self.photo_boo.face_cropper.open_image(filename, greyscale=True)
+        # image = self.photo_boo_ghoster.face_cropper.open_image(filename, greyscale=True)
         return image
 
-    def ghostify(self, image_filepath, timestamp):
-        raw_image = self.open_image(image_filepath)
+    def ghostify(self, raw_image, timestamp):
+        raw_image = cv2.cvtColor(raw_image, cv2.COLOR_RGB2GRAY)
+        # raw_image = self.open_image(image_filepath)
         # print("opened image. image dimensions are {}".format((raw_image.shape[0],raw_image.shape[1])))
-        # raw_rotated_image = self.photo_boo.face_cropper.rotate(
+        # raw_rotated_image = self.photo_boo_ghoster.face_cropper.rotate(
         #     raw_image,
         #     angle_degrees=0
         # )
-        image = self.photo_boo.face_cropper.auto_adjust_levels(raw_image)
+        image = self.photo_boo_ghoster.face_cropper.auto_adjust_levels(raw_image)
         output = {}
         print("checking if face exists")
-        possible_face_bounding_boxes = self.photo_boo.does_face_exist(image)
+        possible_face_bounding_boxes = self.photo_boo_ghoster.does_face_exist(image)
 
-        output["data"] = image
-        if possible_face_bounding_boxes is False:
-            output["data"] = image
-            output["face_found"] = False
-            output["path"] = image_filepath
-        else:
-            try:
-                output_filepath = self.__take_photoboo_photo(image, timestamp, possible_face_bounding_boxes)
-            except Exception as ex:
-                print(traceback.format_exc())
-                output_filepath = image_filepath
-            image = self.open_image(Path(output_filepath).as_posix())
-            output["data"] = image
-            output["face_found"] = True
-            output["path"] = output_filepath
+        ghosted_face = self.photo_boo_ghoster.ghost_faces(image, possible_face_bounding_boxes)
 
-        # rotate image 90 degrees
-        #self.__upload_photo(image, Path(output["path"]).name)
-        print("Photo exists at ")
-        print(Path(output["path"]).name)
+        # save image in background
+        self.save_image(ghosted_face, timestamp)
 
-        # base64_data = base64.encodestring(output["data"])
-        # self.say(base64_data)
-        self.say("Face Found: {}".format(str(output["face_found"])))
-        self.say("Path: {}".format(output["path"]))
-        return output
+        return ghosted_face
+
+        # output["data"] = image
+        # if possible_face_bounding_boxes is False:
+        #     output["data"] = image
+        #     output["face_found"] = False
+        # else:
+        #     try:
+        #         output_filepath = self.__take_photoboo_photo(image, timestamp, possible_face_bounding_boxes)
+        #     except Exception as ex:
+        #         print(traceback.format_exc())
+        #         output_filepath = image_filepath
+        #     image = self.open_image(Path(output_filepath).as_posix())
+        #     output["data"] = image
+        #     output["face_found"] = True
+        #     output["path"] = output_filepath
+
+        # # rotate image 90 degrees
+        # #self.__upload_photo(image, Path(output["path"]).name)
+        # print("Photo exists at ")
+        # print(Path(output["path"]).name)
+
+        # # base64_data = base64.encodestring(output["data"])
+        # # self.say(base64_data)
+        # self.say("Face Found: {}".format(str(output["face_found"])))
+        # self.say("Path: {}".format(output["path"]))
+        # return output
 
     def __create_path_if_not_exists(self, images_folder):
         does_folder_exist = self.images_folder.exists()
@@ -139,11 +163,11 @@ class PhotoBooManager(object):
         return time.mktime(date.timetuple())
 
     def __take_photoboo_photo(self, image, timestamp, possible_face_bounding_boxes):
-        ghosted_face = self.photo_boo.ghost_faces(image, possible_face_bounding_boxes)
+        ghosted_face = self.photo_boo_ghoster.ghost_faces(image, possible_face_bounding_boxes)
         output_filename = self.images_folder / Path(
             "ghosted_{}.jpg".format(timestamp)
         )
-        self.photo_boo.save_image(ghosted_face, output_filename.as_posix())
+        self.photo_boo_ghoster.save_image(ghosted_face, output_filename.as_posix())
 
         return output_filename
 

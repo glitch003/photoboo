@@ -8,6 +8,7 @@ import time
 from pynput import keyboard
 from PIL import Image
 import threading
+import cv2
 
 button_pin_id = 11
 button_mode = GPIO.PUD_UP
@@ -68,30 +69,29 @@ def take_photo_and_process_image():
 
     print_timestamp("snapping photo")
 
-    image_filepath = photo_boo.take_photo(camera, timestamp)
+    image = photo_boo.take_photo(camera, timestamp)
 
     print_timestamp("add snap overlay")
-    main_overlay = add_image_overlay(image_filepath)
+    main_overlay = add_image_overlay(image)
 
     print_timestamp("ghostifying photo")
-    image = photo_boo.ghostify(image_filepath, timestamp)
+    image = photo_boo.ghostify(image, timestamp)
 
     print_timestamp("remove snapped overlay")
     camera.remove_overlay(main_overlay)
 
-    # now show result
-    print(image)
-
     print_timestamp("add ghost overlay")
-    main_overlay = add_image_overlay(image['path'])
+    main_overlay = add_image_overlay(image)
 
     # done processing
     print_timestamp("setting app state to 2")
     app_state = 2
 
-def add_image_overlay(image_filepath):
+def add_image_overlay(raw_cv2_img):
     # Load the arbitrarily sized image
-    img = Image.open(image_filepath)
+    # img = Image.open(image_filepath)
+    # raw_cv2_img = cv2.cvtColor(raw_cv2_img, cv2.COLOR_BGR2RGB)
+    img = Image.fromarray(raw_cv2_img)
     # Create an image padded to the required size with
     # mode 'RGB'
     pad = Image.new('RGB', (

@@ -50,7 +50,7 @@ class PhotoBooGhoster(object):
                 if face_shape == False:
                     continue
             except Exception as ex:
-                print("Exception captured and handled...")
+                print("Exception below is captured and handled...")
                 print(traceback.format_exc())
                 print("-------------------")
                 continue
