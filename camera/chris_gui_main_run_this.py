@@ -93,7 +93,9 @@ def add_image_overlay(raw_cv2_img):
     # Load the arbitrarily sized image
     # img = Image.open(image_filepath)
     # raw_cv2_img = cv2.cvtColor(raw_cv2_img, cv2.COLOR_BGR2RGB)
+
     img = Image.fromarray(raw_cv2_img)
+
     # Create an image padded to the required size with
     # mode 'RGB'
     pad = Image.new('RGB', (

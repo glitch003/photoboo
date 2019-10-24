@@ -10,6 +10,7 @@ import cv2
 import time
 import dlib
 from picamera.array import PiRGBArray
+from PIL import Image
 
 try:
     from pathlib import Path
@@ -65,9 +66,13 @@ class PhotoBooManager(object):
         # image = self.open_image(tmp_image_filepath.as_posix())
 
         # capture to ram
-        rawCapture = PiRGBArray(camera)
-        camera.capture(rawCapture, format="rgb")
+        rawCapture = PiRGBArray(camera, size=(1920,1080))
+        camera.capture(rawCapture, format="rgb", resize=(1920,1080))
         image = rawCapture.array
+
+        # pil_image = Image.fromarray(image)
+
+        # return pil_image
 
         # save image on bg thread
         self.save_image(image, "original", timestamp, True)
