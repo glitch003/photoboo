@@ -70,7 +70,7 @@ class PhotoBooManager(object):
         image = rawCapture.array
 
         # save image on bg thread
-        self.save_image(image, timestamp)
+        self.save_image(image, "original", timestamp, True)
 
         return image
 
@@ -82,10 +82,11 @@ class PhotoBooManager(object):
         # )
         # return tmp_image_filepath.as_posix()
 
-    def save_image(self, image, timestamp):
+    def save_image(self, image, image_prefix, timestamp, convert_bgr_to_rgb=False):
         script_folder = self.__get_script_folder()
         images_folder = script_folder / self.images_folder
-        tmp_image_filename = "original_{}.jpg".format(
+        tmp_image_filename = "{}_{}.jpg".format(
+            image_prefix,
             timestamp
         )
         tmp_image_filepath = images_folder / Path(tmp_image_filename)
@@ -98,6 +99,10 @@ class PhotoBooManager(object):
             raise SystemExit
 
         print("saving image to {}".format(tmp_image_filepath.as_posix()))
+
+        if convert_bgr_to_rgb:
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
         cv2.imwrite(tmp_image_filepath.as_posix(), image)
 
     def open_image(self, filename):
@@ -121,7 +126,7 @@ class PhotoBooManager(object):
         ghosted_face = self.photo_boo_ghoster.ghost_faces(image, possible_face_bounding_boxes)
 
         # save image in background
-        self.save_image(ghosted_face, timestamp)
+        self.save_image(ghosted_face, "ghosted", timestamp)
 
         return ghosted_face
 

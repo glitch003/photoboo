@@ -19,6 +19,8 @@ app_state = 0
 
 camera = PiCamera(sensor_mode=2)
 camera.hflip = True
+camera.resolution = (1920, 1080)
+
 photo_boo = PhotoBooManager()
 
 main_overlay = 0
