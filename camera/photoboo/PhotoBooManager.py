@@ -12,6 +12,7 @@ import dlib
 from picamera.array import PiRGBArray
 from PIL import Image
 import threading
+import numpy as np
 
 
 try:

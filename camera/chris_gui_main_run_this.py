@@ -5,10 +5,11 @@ from photoboo.PhotoBooManager import PhotoBooManager
 import RPi.GPIO as GPIO
 from picamera import PiCamera
 import time
-from pynput import keyboard
+from pynput import keyboard, mouse
 from PIL import Image
 import threading
 import cv2
+import numpy as np
 
 button_pin_id = 11
 button_mode = GPIO.PUD_UP
@@ -20,6 +21,9 @@ app_state = 0
 camera = PiCamera(sensor_mode=2)
 camera.hflip = True
 camera.resolution = (1920, 1080)
+camera.annotate_text = 'Press any key to find ghosts'
+camera.annotate_text_size = 60
+
 
 photo_boo = PhotoBooManager()
 
@@ -58,7 +62,9 @@ def advance_state():
     elif app_state == 2:
         print_timestamp("remove ghost overlay")
         camera.remove_overlay(main_overlay)
+        camera.annotate_text = 'Press any key to find ghosts'
         app_state = 0
+
 
 def print_timestamp(msg):
     print("[{}]: {}".format(round(time.time()), msg))
@@ -67,6 +73,8 @@ def take_photo_and_process_image():
     global main_overlay
     global app_state
 
+    camera.annotate_text = ''
+
     timestamp = round(time.time())
 
     print_timestamp("snapping photo")
@@ -74,7 +82,10 @@ def take_photo_and_process_image():
     image = photo_boo.take_photo(camera, timestamp)
 
     print_timestamp("add snap overlay")
-    main_overlay = add_image_overlay(image)
+
+    image_with_text = np.copy(image)
+    cv2.putText(image_with_text, "Finding Ghosts...", (700, 100), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), lineType=cv2.LINE_AA)
+    main_overlay = add_image_overlay(image_with_text)
 
     print_timestamp("ghostifying photo")
     image = photo_boo.ghostify(image, timestamp)
@@ -134,18 +145,28 @@ def on_release(key):
         # Stop listener
         return False
 
+def on_click(x, y, button, pressed):
+    if pressed:
+        print('Mouse clicked at ({0}, {1}) with {2}'.format(x, y, button))
+        advance_state()
 
+def on_scroll(x, y, dx, dy):
+    print('Mouse scrolled at ({0}, {1})({2}, {3})'.format(x, y, dx, dy))
 
 def main():
 
     camera.start_preview()
 
     # Collect events until released
+    mouseListener = mouse.Listener(on_click=on_click, on_scroll=on_scroll)
+    mouseListener.start()
     with keyboard.Listener(
             on_press=on_press,
             on_release=on_release) as listener:
         listener.join()
 
+    # clean up
+    camera.close()
 
     # button_down = 1
     # button_up = 0
