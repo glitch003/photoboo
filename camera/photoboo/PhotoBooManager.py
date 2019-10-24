@@ -11,6 +11,8 @@ import time
 import dlib
 from picamera.array import PiRGBArray
 from PIL import Image
+import threading
+
 
 try:
     from pathlib import Path
@@ -75,7 +77,7 @@ class PhotoBooManager(object):
         # return pil_image
 
         # save image on bg thread
-        self.save_image(image, "original", timestamp, True)
+        threading.Thread(target=self.save_image, args=(image, "original", timestamp, True)).start()
 
         return image
 
@@ -131,7 +133,8 @@ class PhotoBooManager(object):
         ghosted_face = self.photo_boo_ghoster.ghost_faces(image, possible_face_bounding_boxes)
 
         # save image in background
-        self.save_image(ghosted_face, "ghosted", timestamp)
+        # save image on bg thread
+        threading.Thread(target=self.save_image, args=(ghosted_face, "ghosted", timestamp, False)).start()
 
         return ghosted_face
 
