@@ -17,6 +17,7 @@ button_mode = GPIO.PUD_UP
 app_state = 0
 
 camera = PiCamera(sensor_mode=2)
+camera.hflip = True
 photo_boo = PhotoBooManager()
 
 main_overlay = 0
