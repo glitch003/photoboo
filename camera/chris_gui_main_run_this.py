@@ -24,6 +24,8 @@ camera.resolution = (1920, 1080)
 camera.annotate_text = 'Press any key to find ghosts'
 camera.annotate_text_size = 60
 
+# consecutive_esc_presses = 0
+
 
 photo_boo = PhotoBooManager()
 
@@ -94,6 +96,8 @@ def take_photo_and_process_image():
     camera.remove_overlay(main_overlay)
 
     print_timestamp("add ghost overlay")
+
+    cv2.putText(image, "Press any key to return to camera view", (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), lineType=cv2.LINE_AA)
     main_overlay = add_image_overlay(image)
 
     # done processing
@@ -133,17 +137,17 @@ def on_press(key):
     try:
         print('alphanumeric key {0} pressed'.format(
             key.char))
-        advance_state()
     except AttributeError:
         print('special key {0} pressed'.format(
             key))
+    advance_state()
 
 def on_release(key):
     print('{0} released'.format(
         key))
-    if key == keyboard.Key.esc:
+    # if key == keyboard.Key.esc:
         # Stop listener
-        return False
+        # return False
 
 def on_click(x, y, button, pressed):
     if pressed:
