@@ -69,7 +69,7 @@ class PhotoBooManager(object):
         # image = self.open_image(tmp_image_filepath.as_posix())
         # capture to ram
         rawCapture = PiRGBArray(camera, size=(1920,1080))
-        camera.capture(rawCapture, format="rgb", resize=(1920,1080))
+        camera.capture(rawCapture, format="rgb", resize=(1920,1080), use_video_port=True)
         image = rawCapture.array
 
         # pil_image = Image.fromarray(image)
