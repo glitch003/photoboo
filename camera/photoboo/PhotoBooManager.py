@@ -3,13 +3,13 @@ import os
 import sys
 import base64
 from .PhotoBooGhoster import PhotoBooGhoster
+from .PhotoBooSnowmaner import PhotoBooSnowmaner
 from datetime import datetime
 import requests
 import traceback
 import cv2
 import time
 import dlib
-from picamera.array import PiRGBArray
 from PIL import Image
 import threading
 import numpy as np
@@ -22,6 +22,7 @@ except (ImportError, AttributeError):
 Path().expanduser()
 try:
     from picamera import PiCamera
+    from picamera.array import PiRGBArray
 except (ImportError, AttributeError):
     pass
 
@@ -29,8 +30,8 @@ except (ImportError, AttributeError):
 class PhotoBooManager(object):
     camera = None
     photo_boo_ghoster = None
-    # images_folder = Path('/Users/chris/PhotoData')
-    images_folder = Path('/home/pi/PhotoData')
+    images_folder = Path('/Users/chris/PhotoData')
+    # images_folder = Path('/home/pi/PhotoData')
 
     face_data_filename = "haarcascades/haarcascade_frontalface_default.xml"
     predictor_path = "shape_predictor_68_face_landmarks.dat"
@@ -50,6 +51,7 @@ class PhotoBooManager(object):
         print("predictor loaded")
 
         self.photo_boo_ghoster = PhotoBooGhoster(predictor)
+        self.photo_boo_snowmaner = PhotoBooSnowmaner(predictor)
 
 
 
@@ -116,6 +118,27 @@ class PhotoBooManager(object):
         image = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
         # image = self.photo_boo_ghoster.face_cropper.open_image(filename, greyscale=True)
         return image
+
+    def snowmanify(self, raw_image, timestamp):
+        raw_image = cv2.cvtColor(raw_image, cv2.COLOR_RGB2GRAY)
+        # raw_image = self.open_image(image_filepath)
+        # print("opened image. image dimensions are {}".format((raw_image.shape[0],raw_image.shape[1])))
+        # raw_rotated_image = self.photo_boo_ghoster.face_cropper.rotate(
+        #     raw_image,
+        #     angle_degrees=0
+        # )
+        image = self.photo_boo_snowmaner.face_cropper.auto_adjust_levels(raw_image)
+        output = {}
+        print("checking if face exists")
+        possible_face_bounding_boxes = self.photo_boo_snowmaner.does_face_exist(image)
+
+        ghosted_face = self.photo_boo_snowmaner.ghost_faces(image, possible_face_bounding_boxes)
+
+        # save image in background
+        # save image on bg thread
+        threading.Thread(target=self.save_image, args=(ghosted_face, "ghosted", timestamp, False)).start()
+
+        return ghosted_face
 
     def ghostify(self, raw_image, timestamp):
         raw_image = cv2.cvtColor(raw_image, cv2.COLOR_RGB2GRAY)
