@@ -64,7 +64,7 @@ def advance_state():
     elif app_state == 2:
         print_timestamp("remove ghost overlay")
         camera.remove_overlay(main_overlay)
-        camera.annotate_text = 'Press any key to find ghosts'
+        camera.annotate_text = 'Press any key to get snowy'
         app_state = 0
 
 
@@ -86,7 +86,7 @@ def take_photo_and_process_image():
     print_timestamp("add snap overlay")
 
     image_with_text = np.copy(image)
-    cv2.putText(image_with_text, "Finding Ghosts...", (700, 100), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), lineType=cv2.LINE_AA)
+    cv2.putText(image_with_text, "Waiting for snow...", (700, 100), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), lineType=cv2.LINE_AA)
     main_overlay = add_image_overlay(image_with_text)
 
     print_timestamp("ghostifying photo")
@@ -97,7 +97,7 @@ def take_photo_and_process_image():
 
     print_timestamp("add ghost overlay")
 
-    cv2.putText(image, "Press any key to return to camera view", (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), lineType=cv2.LINE_AA)
+    cv2.putText(image, "Press any key to return to camera view", (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), lineType=cv2.LINE_AA)
     main_overlay = add_image_overlay(image)
 
     # done processing

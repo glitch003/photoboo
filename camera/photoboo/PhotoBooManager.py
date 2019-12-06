@@ -30,8 +30,8 @@ except (ImportError, AttributeError):
 class PhotoBooManager(object):
     camera = None
     photo_boo_ghoster = None
-    images_folder = Path('/Users/chris/PhotoData')
-    # images_folder = Path('/home/pi/PhotoData')
+    # images_folder = Path('/Users/chris/PhotoData')
+    images_folder = Path('/home/pi/PhotoData')
 
     face_data_filename = "haarcascades/haarcascade_frontalface_default.xml"
     predictor_path = "shape_predictor_68_face_landmarks.dat"
