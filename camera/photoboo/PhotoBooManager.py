@@ -120,19 +120,22 @@ class PhotoBooManager(object):
         return image
 
     def snowmanify(self, raw_image, timestamp):
-        raw_image = cv2.cvtColor(raw_image, cv2.COLOR_RGB2GRAY)
+        # raw_image = cv2.cvtColor(raw_image, cv2.COLOR_RGB2GRAY)
         # raw_image = self.open_image(image_filepath)
         # print("opened image. image dimensions are {}".format((raw_image.shape[0],raw_image.shape[1])))
         # raw_rotated_image = self.photo_boo_ghoster.face_cropper.rotate(
         #     raw_image,
         #     angle_degrees=0
         # )
-        image = self.photo_boo_snowmaner.face_cropper.auto_adjust_levels(raw_image)
+
+        image = raw_image
+        # image = self.photo_boo_snowmaner.face_cropper.auto_adjust_levels_for_color(raw_image)
+
         output = {}
         print("checking if face exists")
         possible_face_bounding_boxes = self.photo_boo_snowmaner.does_face_exist(image)
 
-        ghosted_face = self.photo_boo_snowmaner.ghost_faces(image, possible_face_bounding_boxes)
+        ghosted_face = self.photo_boo_snowmaner.snowmanify_faces(image, possible_face_bounding_boxes)
 
         # save image in background
         # save image on bg thread

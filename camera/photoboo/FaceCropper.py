@@ -4,6 +4,10 @@ import numpy as np
 import dlib
 import os
 import time
+from skimage.filters import threshold_yen
+from skimage.exposure import rescale_intensity
+from skimage.io import imread, imsave
+
 try:
     from pathlib import Path
     Path().expanduser()
@@ -88,6 +92,33 @@ class FaceCropper(object):
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(4,4))
         adjusted_image = clahe.apply(image)
         return adjusted_image
+
+    def auto_adjust_levels_for_color(self, image):
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        yen_threshold = threshold_yen(image)
+        bright = rescale_intensity(image, (0, yen_threshold), (0, 255))
+        bright = cv2.cvtColor(bright, cv2.COLOR_BGR2RGB)
+        return bright
+
+
+
+        # lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+
+        # # lab_planes = cv2.split(lab)
+
+        # clahe = cv2.createCLAHE(clipLimit=2.0,tileGridSize=(4,4))
+
+        # # lab_planes[0] = clahe.apply(lab_planes[0])
+
+        # # lab = cv2.merge(lab_planes)
+
+        # lab[...,0] = clahe.apply(lab[...,0])
+
+        # bgr = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+
+        # # clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(4,4))
+        # # adjusted_image = clahe.apply(image)
+        # return bgr
 
     def rotate(self, image, angle_degrees=90):
         # modified from:

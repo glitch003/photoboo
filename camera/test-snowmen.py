@@ -3,7 +3,7 @@ import time
 import cv2
 
 # image_filepath = "beatles.jpg"
-image_filepath = "original_1571629730.jpg"
+image_filepath = "original_1571920621.jpg"
 # image_filepath = "adonis-moustache.jpg"
 
 photo_boo = PhotoBooManager()

@@ -5,8 +5,12 @@ from collections import OrderedDict
 import traceback
 
 
-class PhotoBooSnowmaner(object):
+class PhotoBooPutFacesOnSnowmen(object):
     face_cropper = None
+    snowman_face_coords = [
+        [229, 556, 433, 722],
+        [570, 339, 744, 492]
+    ]
 
     def __init__(self, preloaded_predictor):
         self.face_cropper = FaceCropper(preloaded_predictor, in_verbose_mode = True)
@@ -27,13 +31,10 @@ class PhotoBooSnowmaner(object):
             print(traceback.format_exc())
             return False
 
-    def make_snow(self, image):
-        background_image = self.add_rain(image)
-        background_image = self.add_snow(background_image)
-        return background_image
-
-    def make_snow_angels(self, image, face_bounding_boxes):
-        background_image = cv2.imread('mountain-snow-1080p.jpg')
+    def snowmanify_faces(self, image, face_bounding_boxes):
+        # print("blurring image...")
+        # background_image = self.horizontal_blur(image)
+        background_image = cv2.imread('snow-background.jpg', cv2.IMREAD_COLOR)
 
         ghost_faces = []
         face_shapes = []
@@ -41,15 +42,43 @@ class PhotoBooSnowmaner(object):
         i = 0
         for face_bounding_box in face_bounding_boxes:
             print("getting face stuff for index {}. face bounding box is {}".format(i, face_bounding_box))
+
+            # crop image to face bounding box
+            y = face_bounding_box[1]
+            x = face_bounding_box[0]
+            h = face_bounding_box[2]
+            w = face_bounding_box[3]
+
+            face_image = image[y:y+h, x:x+w]
+
+            # scale image to snowman size
+            min_snowman_x, min_snowman_y, max_snowman_x, max_snowman_y = self.snowman_face_coords[i]
+
+
+            print("old face image shape: {}".format(face_image.shape))
+            snowman_width = int(max_snowman_x - min_snowman_x)
+            snowman_height = int(max_snowman_y - min_snowman_y)
+
+            scale_percent = snowman_height / face_image.shape[0]
+            width = int(face_image.shape[1] * scale_percent)
+            height = int(face_image.shape[0] * scale_percent)
+
+            dim = (width, height)
+            face_image = cv2.resize(face_image, dim, interpolation = cv2.INTER_AREA)
+            print("new face image shape: {}".format(face_image.shape))
+
+
+
             i += 1
             face_landmarks = self.face_cropper.get_face_landmarks(
-                image,
-                face_bounding_box
+                face_image,
+                [0,0,h,w]
             )
+
             # print("face landmarks are {}.  getting face shape".format(face_landmarks))
             # sometimes the face shape detector fails.  lets just skip those faces.
             try:
-                face_shape = self.get_face_shape(image, face_landmarks)
+                face_shape = self.get_face_shape(face_image, face_landmarks)
                 # this can happen if we didn't get good triangles.  skip it.
                 if face_shape == False:
                     continue
@@ -60,9 +89,8 @@ class PhotoBooSnowmaner(object):
                 continue
             # print("after exception, processing index ")
             # print(i)
-            # print("fill in mouth and eyes")
-            # ghost_face = self.fill_in_mouth_and_eyes(image, face_landmarks)
-            ghost_face = image
+            print("fill in mouth and eyes")
+            ghost_face = self.fill_in_mouth_and_eyes(face_image, face_landmarks)
 
             face_shapes.append(face_shape)
             ghost_faces.append(ghost_face)
@@ -75,15 +103,6 @@ class PhotoBooSnowmaner(object):
         )
 
         return merged_image
-
-
-    def snowmanify_faces(self, image, face_bounding_boxes):
-        randint = np.random.randint(0,2)
-        if randint == 0:
-            return self.make_snow(image)
-        else:
-            return self.make_snow_angels(image, face_bounding_boxes)
-
 
 
     def fill_in_mouth_and_eyes(self, image, face_landmarks, alpha=1.0):
@@ -107,11 +126,8 @@ class PhotoBooSnowmaner(object):
             pts = np.array(face_landmarks[j:k])
 
             color = (0, 0, 0)
-            # check if are supposed to draw the jawline
-            # if name == "mouth" or name == "left_eye" or name == "right_eye":
-            #     hull = cv2.convexHull(pts)
-            #     cv2.drawContours(overlay, [hull], -1, color, -1)
 
+            # # # check if are supposed to draw the jawline
             if name == "left_eyebrow" or name == "left_eyebrow":
                 hull = cv2.convexHull(pts)
                 cv2.drawContours(overlay, [hull], -1, color, -1)
@@ -187,50 +203,8 @@ class PhotoBooSnowmaner(object):
         }
         return output
 
-    def generate_random_lines(self, imshape,slant,drop_length):
-        drops=[]
-        for i in range(1000): ## If You want heavy rain, try increasing this
-            if slant<0:
-                x= np.random.randint(slant,imshape[1])
-            else:
-                x= np.random.randint(0,imshape[1]-slant)
-
-            y = np.random.randint(0,imshape[0]-drop_length)
-            drops.append((x,y))
-        return drops
-
-    def add_rain(self, image):
-        imshape = image.shape
-        slant_extreme=2
-        slant= np.random.randint(-slant_extreme,slant_extreme)
-        drop_length=4
-        drop_width=4
-        drop_color=(255,255,255) ## a shade of gray
-        rain_drops = self.generate_random_lines(imshape,slant,drop_length)
-        for rain_drop in rain_drops:
-            # drop_length= np.random.randint(1,10)
-            # drop_width= np.random.randint(1,10)
-            cv2.line(image,(rain_drop[0],rain_drop[1]),(rain_drop[0]+slant,rain_drop[1]+drop_length),drop_color,drop_width)
-        # image= cv2.blur(image,(7,7)) ## rainy view are blurry
-        return image
-
-        # brightness_coefficient = 0.7 ## rainy days are usually shady
-        # image_HLS = cv2.cvtColor(image,cv2.COLOR_RGB2HLS) ## Conversion to HLS
-        # image_HLS[:,:,1] = image_HLS[:,:,1]*brightness_coefficient ## scale pixel values down for channel 1(Lightness)
-        # image_RGB = cv2.cvtColor(image_HLS,cv2.COLOR_HLS2RGB) ## Conversion to RGB
-        # return image_RGB
-
-
-    def add_snow(self, image):
-        image_HLS = cv2.cvtColor(image,cv2.COLOR_RGB2HLS) ## Conversion to HLS
-        image_HLS = np.array(image_HLS, dtype = np.float64)
-        brightness_coefficient = 2.5
-        snow_point=140 ## increase this for more snow
-        image_HLS[:,:,1][image_HLS[:,:,1]<snow_point] = image_HLS[:,:,1][image_HLS[:,:,1]<snow_point]*brightness_coefficient ## scale pixel values up for channel 1(Lightness)
-        image_HLS[:,:,1][image_HLS[:,:,1]>255]  = 255 ##Sets all values above 255 to 255
-        image_HLS = np.array(image_HLS, dtype = np.uint8)
-        image_RGB = cv2.cvtColor(image_HLS,cv2.COLOR_HLS2RGB) ## Conversion to RGB
-        return image_RGB
+    def translate(self, start, distance):
+        return (np.array(start) + np.array(distance)).astype(np.int)
 
 
     def horizontal_blur(self, image, size=15):
@@ -275,9 +249,52 @@ class PhotoBooSnowmaner(object):
 
             face_shape_points = face_shape["points"]
             min_x, min_y, max_x, max_y = face_shape["bounds"]
+
+            # map to snowman face
+            min_snowman_x, min_snowman_y, max_snowman_x, max_snowman_y = self.snowman_face_coords[i]
+
+            # scale to snwoman x
+
+            # print("face shape points: ")
+            # print(face_shape_points)
+
+            # print("old face image shape: {}".format(face_image.shape))
+            # scale_percent = 60 # percent of original size
+            # width = int(face_image.shape[1] * scale_percent / 100)
+            # height = int(face_image.shape[0] * scale_percent / 100)
+
+            # dim = (width, height)
+            # # dim = ((max_snowman_x - min_snowman_x), (max_snowman_y - min_snowman_y))
+
+            # face_image = cv2.resize(face_image, dim, interpolation = cv2.INTER_AREA)
+
+            # print("new face image shape: {}".format(face_image.shape))
+            # # face_shape_points
+
+            snowman_center = (
+                int(round(min_snowman_x + (max_snowman_x - min_snowman_x)/2)),
+                int(round(min_snowman_y + (max_snowman_y - min_snowman_y)/2))
+            )
+
+            face_shape_center = (
+                int(round(min_x + (max_x - min_x)/2)),
+                int(round(min_y + (max_y - min_y)/2))
+            )
+
+            # shrink face_shape_points around face_shape_center
+
+
+
+            # pts = self.translate(face_shape_points, [face_shape_center[0] - snowman_center[0], face_shape_center[1] - snowman_center[1]])
             pts = np.array(face_shape_points).astype(np.int)
-            mask = 0 * np.ones(merged_image.shape, merged_image.dtype)
-            cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
+            print("pts")
+            print(pts)
+
+            # pts = np.subtract(pts, np.array([100,100]))
+            mask = np.zeros(face_image.shape, face_image.dtype)
+            cv2.fillPoly(mask, [pts], (255, 255, 255))
+
+            # mask = 255 * np.ones(face_image.shape, face_image.dtype)
 
             # print("checking len of face_image.shape")
             # print(len(face_image.shape))
@@ -293,9 +310,12 @@ class PhotoBooSnowmaner(object):
 
             else:
                 height, width, channels = face_image.shape
+
+
+
             center = (
-                int(round(min_x + (max_x - min_x)/2)),
-                int(round(min_y + (max_y - min_y)/2))
+                int(round(min_snowman_x + (max_snowman_x - min_snowman_x)/2)),
+                int(round(min_snowman_y + (max_snowman_y - min_snowman_y)/2))
             )
 
             print("seamless cloning")
@@ -305,7 +325,7 @@ class PhotoBooSnowmaner(object):
                 merged_image,
                 mask,
                 center,
-                cv2.NORMAL_CLONE
+                cv2.NORMAL_CLONE # cv2.MIXED_CLONE
             )
 
             i += 1
