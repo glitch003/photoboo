@@ -21,7 +21,7 @@ app_state = 0
 camera = PiCamera(sensor_mode=2)
 camera.hflip = True
 camera.resolution = (1920, 1080)
-camera.annotate_text = 'Press any key to find ghosts'
+camera.annotate_text = 'Press any key to get snowy'
 camera.annotate_text_size = 60
 
 # consecutive_esc_presses = 0
@@ -90,7 +90,7 @@ def take_photo_and_process_image():
     main_overlay = add_image_overlay(image_with_text)
 
     print_timestamp("ghostifying photo")
-    image = photo_boo.ghostify(image, timestamp)
+    image = photo_boo.snowmanify(image, timestamp)
 
     print_timestamp("remove snapped overlay")
     camera.remove_overlay(main_overlay)
