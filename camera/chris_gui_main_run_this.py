@@ -31,7 +31,6 @@ photo_boo = PhotoBooManager()
 
 main_overlay = 0
 
-debug_mode = True
 
 
 def build_command_parser():
@@ -65,9 +64,8 @@ def advance_state():
         # take_photo_and_process_image()
     elif app_state == 2:
         print_timestamp("remove ghost overlay")
-        if !debug_mode:
-            camera.remove_overlay(main_overlay)
-            camera.annotate_text = 'Press any key to get snowy'
+        camera.remove_overlay(main_overlay)
+        camera.annotate_text = 'Press any key to get snowy'
         app_state = 0
 
 
@@ -78,8 +76,7 @@ def take_photo_and_process_image():
     global main_overlay
     global app_state
 
-    if !debug_mode:
-        camera.annotate_text = ''
+    camera.annotate_text = ''
 
     timestamp = round(time.time())
 
@@ -89,23 +86,20 @@ def take_photo_and_process_image():
 
     print_timestamp("add snap overlay")
 
-    if !debug_mode:
-        image_with_text = np.copy(image)
-        cv2.putText(image_with_text, "Waiting for snow...", (700, 100), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), lineType=cv2.LINE_AA)
-        main_overlay = add_image_overlay(image_with_text)
+    image_with_text = np.copy(image)
+    cv2.putText(image_with_text, "Waiting for snow...", (700, 100), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), lineType=cv2.LINE_AA)
+    main_overlay = add_image_overlay(image_with_text)
 
     print_timestamp("ghostifying photo")
     image = photo_boo.snowmanify(image, timestamp)
 
     print_timestamp("remove snapped overlay")
-    if !debug_mode:
-        camera.remove_overlay(main_overlay)
+    camera.remove_overlay(main_overlay)
 
     print_timestamp("add ghost overlay")
 
-    if !debug_mode:
-        cv2.putText(image, "Press any key to return to camera view", (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), lineType=cv2.LINE_AA)
-        main_overlay = add_image_overlay(image)
+    cv2.putText(image, "Press any key to return to camera view", (500, 100), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), lineType=cv2.LINE_AA)
+    main_overlay = add_image_overlay(image)
 
     # done processing
     print_timestamp("setting app state to 2")
@@ -165,8 +159,8 @@ def on_scroll(x, y, dx, dy):
     print('Mouse scrolled at ({0}, {1})({2}, {3})'.format(x, y, dx, dy))
 
 def main():
-    if !debug_mode:
-        camera.start_preview()
+
+    camera.start_preview()
 
     # Collect events until released
     mouseListener = mouse.Listener(on_click=on_click, on_scroll=on_scroll)
