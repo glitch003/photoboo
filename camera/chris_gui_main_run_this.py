@@ -10,6 +10,7 @@ from PIL import Image
 import threading
 import cv2
 import numpy as np
+import sys
 
 button_pin_id = 11
 button_mode = GPIO.PUD_UP
@@ -23,6 +24,10 @@ camera.hflip = True
 camera.resolution = (1920, 1080)
 camera.annotate_text = 'Press any key to get snowy'
 camera.annotate_text_size = 60
+
+orig_stdout = sys.stdout
+f = open('/home/pi/stdlog.txt', 'w')
+sys.stdout = f
 
 # consecutive_esc_presses = 0
 
@@ -172,6 +177,7 @@ def main():
 
     # clean up
     camera.close()
+    f.close()
 
     # button_down = 1
     # button_up = 0
