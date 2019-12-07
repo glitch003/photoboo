@@ -119,7 +119,7 @@ class PhotoBooManager(object):
         # image = self.photo_boo_ghoster.face_cropper.open_image(filename, greyscale=True)
         return image
 
-    def snowmanify(self, raw_image, timestamp):
+    def snowmanify(self, raw_image, timestamp, log_file):
         # raw_image = cv2.cvtColor(raw_image, cv2.COLOR_RGB2GRAY)
         # raw_image = self.open_image(image_filepath)
         # print("opened image. image dimensions are {}".format((raw_image.shape[0],raw_image.shape[1])))
@@ -133,9 +133,12 @@ class PhotoBooManager(object):
 
         output = {}
         print("checking if face exists")
+        log_file.flush()
         possible_face_bounding_boxes = self.photo_boo_snowmaner.does_face_exist(image)
+        log_file.flush()
 
-        ghosted_face = self.photo_boo_snowmaner.snowmanify_faces(image, possible_face_bounding_boxes)
+        ghosted_face = self.photo_boo_snowmaner.snowmanify_faces(image, possible_face_bounding_boxes, log_file)
+        log_file.flush()
 
         # save image in background
         # save image on bg thread

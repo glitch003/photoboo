@@ -32,8 +32,10 @@ class PhotoBooSnowmaner(object):
         background_image = self.add_snow(background_image)
         return background_image
 
-    def make_snow_angels(self, image, face_bounding_boxes):
-        background_image = cv2.imread('mountain-snow-1080p.jpg')
+    def make_snow_angels(self, image, face_bounding_boxes, log_file):
+        background_image = cv2.imread('/home/pi/camera/mountain-snow-1080p.jpg', cv2.IMREAD_COLOR)
+        print("loaded image")
+        log_file.flush()
 
         ghost_faces = []
         face_shapes = []
@@ -41,6 +43,7 @@ class PhotoBooSnowmaner(object):
         i = 0
         for face_bounding_box in face_bounding_boxes:
             print("getting face stuff for index {}. face bounding box is {}".format(i, face_bounding_box))
+            log_file.flush()
             i += 1
             face_landmarks = self.face_cropper.get_face_landmarks(
                 image,
@@ -57,6 +60,7 @@ class PhotoBooSnowmaner(object):
                 print("Exception below is captured and handled...")
                 print(traceback.format_exc())
                 print("-------------------")
+                log_file.flush()
                 continue
             # print("after exception, processing index ")
             # print(i)
@@ -68,21 +72,29 @@ class PhotoBooSnowmaner(object):
             ghost_faces.append(ghost_face)
 
         print("merging images")
+        log_file.flush()
         merged_image = self.merge_images(
             ghost_faces,
             background_image,
-            face_shapes
+            face_shapes,
+            log_file
         )
+
+        print("finished merging images")
+        log_file.flush()
 
         return merged_image
 
 
-    def snowmanify_faces(self, image, face_bounding_boxes):
-        randint = np.random.randint(0,2)
-        if randint == 0:
-            return self.make_snow(image)
-        else:
-            return self.make_snow_angels(image, face_bounding_boxes)
+    def snowmanify_faces(self, image, face_bounding_boxes, log_file):
+        return self.make_snow(image)
+        # return self.make_snow_angels(image, face_bounding_boxes, log_file)
+
+        # randint = np.random.randint(0,2)
+        # if randint == 0:
+        #     return self.make_snow(image)
+        # else:
+        #     return self.make_snow_angels(image, face_bounding_boxes)
 
 
 
@@ -253,12 +265,12 @@ class PhotoBooSnowmaner(object):
         output = cv2.filter2D(image, -1, kernel_motion_blur)
         return output
 
-    def merge_images(self, face_images, background_image, face_shapes):
-        # merged_image = cv2.cvtColor(
-        #             background_image,
-        #             cv2.COLOR_GRAY2RGB
-        #         )
-        merged_image = background_image
+    def merge_images(self, face_images, background_image, face_shapes, log_file):
+        merged_image = cv2.cvtColor(
+            background_image,
+            cv2.COLOR_BGR2RGB
+        )
+        # merged_image = background_image
         i = 0
 
         # print("face images has this many items")
@@ -269,15 +281,30 @@ class PhotoBooSnowmaner(object):
         for face_image in face_images:
             print("****processing face images with index")
             print(i)
+            log_file.flush()
 
             face_shape = face_shapes[i]
+
+            print("Got face shape: {}".format(face_shape))
+            log_file.flush()
 
 
             face_shape_points = face_shape["points"]
             min_x, min_y, max_x, max_y = face_shape["bounds"]
             pts = np.array(face_shape_points).astype(np.int)
+
+            print("created pts array.  Creating np.ones for merged_image shape {} and dtype {}".format(merged_image.shape, merged_image.dtype))
+            log_file.flush()
+
             mask = 0 * np.ones(merged_image.shape, merged_image.dtype)
+
+            print("fillPoly starting")
+            log_file.flush()
+
             cv2.fillPoly(mask, [pts], (255, 255, 255), 1)
+
+            print("fillPoly of mask completed")
+            log_file.flush()
 
             # print("checking len of face_image.shape")
             # print(len(face_image.shape))
@@ -293,12 +320,14 @@ class PhotoBooSnowmaner(object):
 
             else:
                 height, width, channels = face_image.shape
+                face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
             center = (
                 int(round(min_x + (max_x - min_x)/2)),
                 int(round(min_y + (max_y - min_y)/2))
             )
 
             print("seamless cloning")
+            log_file.flush()
             # print(mask.tolist())
             merged_image = cv2.seamlessClone(
                 face_image,

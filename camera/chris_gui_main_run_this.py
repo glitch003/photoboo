@@ -25,9 +25,9 @@ camera.resolution = (1920, 1080)
 camera.annotate_text = 'Press any key to get snowy'
 camera.annotate_text_size = 60
 
-orig_stdout = sys.stdout
+# orig_stdout = sys.stdout
 f = open('/home/pi/stdlog.txt', 'w')
-sys.stdout = f
+# sys.stdout = f
 
 # consecutive_esc_presses = 0
 
@@ -97,7 +97,7 @@ def take_photo_and_process_image():
     main_overlay = add_image_overlay(image_with_text)
 
     print_timestamp("ghostifying photo")
-    image = photo_boo.snowmanify(image, timestamp)
+    image = photo_boo.snowmanify(image, timestamp, f)
 
     print_timestamp("remove snapped overlay")
     camera.remove_overlay(main_overlay)
