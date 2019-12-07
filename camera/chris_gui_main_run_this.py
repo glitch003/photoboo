@@ -26,7 +26,7 @@ camera.annotate_text = 'Press any key to get snowy'
 camera.annotate_text_size = 60
 
 orig_stdout = sys.stdout
-f = open('/home/pi/stdlog.txt', 'a', 0)
+f = open('/home/pi/stdlog.txt', 'w')
 sys.stdout = f
 
 # consecutive_esc_presses = 0
@@ -76,6 +76,7 @@ def advance_state():
 
 def print_timestamp(msg):
     print("[{}]: {}".format(round(time.time()), msg))
+    f.flush()
 
 def take_photo_and_process_image():
     global main_overlay
