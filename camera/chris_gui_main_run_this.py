@@ -26,7 +26,7 @@ camera.annotate_text = 'Press any key to get snowy'
 camera.annotate_text_size = 60
 
 orig_stdout = sys.stdout
-f = open('/home/pi/stdlog.txt', 'w')
+f = open('/home/pi/stdlog.txt', 'a', 0)
 sys.stdout = f
 
 # consecutive_esc_presses = 0
